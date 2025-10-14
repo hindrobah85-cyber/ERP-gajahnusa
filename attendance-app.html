@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance App - GAJAH NUSA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .sync-status {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #dc3545;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .customer-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .customer-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .customer-item:hover {
+            background: #e9ecef;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .customer-info {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📱 GAJAH NUSA Attendance</h1>
+            <p style="font-size: 0.9em; opacity: 0.9;">Aplikasi Absensi Salesman</p>
+        </div>
+
+        <!-- Sync Status -->
+        <div class="sync-status">
+            <div class="status-item">
+                <div class="status-dot" id="onlineStatus"></div>
+                <span id="onlineText">Online</span>
+            </div>
+            <div class="status-item">
+                <span>⏰ Sync: <span id="lastSync">Never</span></span>
+            </div>
+            <div class="status-item">
+                <span>📦 <span id="offlineQueue">0</span> pending</span>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="statCustomers">0</div>
+                    <div class="stat-label">Customers</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statProducts">0</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statVisits">0</div>
+                    <div class="stat-label">Visits Today</div>
+                </div>
+            </div>
+
+            <!-- Salesman Info -->
+            <div class="section">
+                <div class="info-card">
+                    <div class="info-row">
+                        <span class="info-label">Salesman ID:</span>
+                        <span class="info-value" id="salesmanId">SALES001</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Area:</span>
+                        <span class="info-value" id="salesmanArea">Jakarta Barat</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Current Status:</span>
+                        <span class="info-value" id="currentStatus">Standby</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="section">
+                <div class="section-title">🎯 Quick Actions</div>
+                <button class="btn btn-success" onclick="openCheckInModal()">
+                    ✓ Check In ke Customer
+                </button>
+                <button class="btn btn-danger" onclick="checkOut()" id="btnCheckOut" disabled>
+                    ✕ Check Out
+                </button>
+                <button class="btn" onclick="syncNow()">
+                    🔄 Sync Data
+                </button>
+            </div>
+
+            <!-- Customers -->
+            <div class="section">
+                <div class="section-title">👥 Customers (Offline Ready)</div>
+                <div class="customer-list" id="customerList">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Products Info -->
+            <div class="section">
+                <div class="section-title">📦 Stock Info</div>
+                <button class="btn btn-secondary" onclick="viewProducts()">
+                    Lihat Stock Produk
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check-In Modal -->
+    <div class="modal" id="checkInModal">
+        <div class="modal-content">
+            <div class="modal-header">Check In ke Customer</div>
+            <div class="input-group">
+                <label>Customer:</label>
+                <select id="customerSelect">
+                    <option value="">Pilih Customer</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Notes:</label>
+                <textarea id="checkInNotes" rows="3" placeholder="Catatan kunjungan..."></textarea>
+            </div>
+            <button class="btn btn-success" onclick="confirmCheckIn()">Confirm Check In</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ==================== LOCAL STORAGE MANAGER ====================
+        const DB_VERSION = 1;
+        const SALESMAN_ID = 'SALES001'; // In production, get from login
+
+        const LocalDB = {
+            saveData(key, data) {
+                localStorage.setItem(key, JSON.stringify(data));
+            },
+            
+            getData(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            },
+            
+            saveCustomers(customers) {
+                this.saveData('customers', customers);
+            },
+            
+            getCustomers() {
+                return this.getData('customers') || [];
+            },
+            
+            saveProducts(products) {
+                this.saveData('products', products);
+            },
+            
+            getProducts() {
+                return this.getData('products') || [];
+            },
+            
+            addOfflineAction(action) {
+                const queue = this.getData('offlineQueue') || [];
+                queue.push({
+                    ...action,
+                    timestamp: new Date().toISOString(),
+                    id: Date.now()
+                });
+                this.saveData('offlineQueue', queue);
+                updateOfflineQueueCount();
+            },
+            
+            getOfflineQueue() {
+                return this.getData('offlineQueue') || [];
+            },
+            
+            clearOfflineQueue() {
+                this.saveData('offlineQueue', []);
+                updateOfflineQueueCount();
+            },
+            
+            saveLastSync() {
+                this.saveData('lastSync', new Date().toISOString());
+            },
+            
+            getLastSync() {
+                return this.getData('lastSync');
+            },
+            
+            setCurrentVisit(visitId) {
+                this.saveData('currentVisit', visitId);
+            },
+            
+            getCurrentVisit() {
+                return this.getData('currentVisit');
+            },
+            
+            clearCurrentVisit() {
+                localStorage.removeItem('currentVisit');
+            }
+        };
+
+        // ==================== API MANAGER ====================
+        const API_BASE = 'http://localhost:8002/api';
+        
+        const API = {
+            async syncDownload() {
+                try {
+                    const response = await fetch(`${API_BASE}/sync/download`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({salesman_id: SALESMAN_ID})
+                    });
+                    
+                    if (!response.ok) throw new Error('Sync failed');
+                    
+                    const data = await response.json();
+                    
+                    // Save to local storage
+                    LocalDB.saveCustomers(data.data.customers);
+                    LocalDB.saveProducts(data.data.products);
+                    LocalDB.saveLastSync();
+                    
+                    return data;
+                } catch (error) {
+                    console.error('Sync download failed:', error);
+                    throw error;
+                }
+            },
+            
+            async syncUpload() {
+                try {
+                    const queue = LocalDB.getOfflineQueue();
+                    if (queue.length === 0) return {success: true, count: 0};
+                    
+                    const response = await fetch(`${API_BASE}/sync/upload`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(queue)
+                    });
+                    
+                    if (!response.ok) throw new Error('Upload failed');
+                    
+                    const data = await response.json();
+                    LocalDB.clearOfflineQueue();
+                    
+                    return data;
+                } catch (error) {
+                    console.error('Sync upload failed:', error);
+                    throw error;
+                }
+            },
+            
+            async checkIn(customerId, notes) {
+                const action = {
+                    action_type: 'check_in',
+                    data: {
+                        salesman_id: SALESMAN_ID,
+                        customer_id: customerId,
+                        latitude: 0, // In production: get from GPS
+                        longitude: 0,
+                        notes: notes
+                    }
+                };
+                
+                if (navigator.onLine) {
+                    try {
+                        const response = await fetch(`${API_BASE}/attendance/checkin`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(action.data)
+                        });
+                        
+                        if (!response.ok) throw new Error('Check-in failed');
+                        
+                        const data = await response.json();
+                        LocalDB.setCurrentVisit(data.visit_id);
+                        return data;
+                    } catch (error) {
+                        // Save offline
+                        LocalDB.addOfflineAction(action);
+                        return {success: true, offline: true};
+                    }
+                } else {
+                    // Offline mode
+                    LocalDB.addOfflineAction(action);
+                    LocalDB.setCurrentVisit('offline_' + Date.now());
+                    return {success: true, offline: true};
+                }
+            },
+            
+            async checkOut(notes) {
+                const visitId = LocalDB.getCurrentVisit();
+                if (!visitId) throw new Error('No active visit');
+                
+                const action = {
+                    action_type: 'check_out',
+                    data: {
+                        visit_id: visitId,
+                        notes: notes
+                    }
+                };
+                
+                if (navigator.onLine && !visitId.startsWith('offline_')) {
+                    try {
+                        const response = await fetch(`${API_BASE}/attendance/checkout`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(action.data)
+                        });
+                        
+                        if (!response.ok) throw new Error('Check-out failed');
+                        
+                        LocalDB.clearCurrentVisit();
+                        return await response.json();
+                    } catch (error) {
+                        LocalDB.addOfflineAction(action);
+                        LocalDB.clearCurrentVisit();
+                        return {success: true, offline: true};
+                    }
+                } else {
+                    LocalDB.addOfflineAction(action);
+                    LocalDB.clearCurrentVisit();
+                    return {success: true, offline: true};
+                }
+            }
+        };
+
+        // ==================== UI FUNCTIONS ====================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'success' ? '#28a745' : '#dc3545';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function openCheckInModal() {
+            const customers = LocalDB.getCustomers();
+            const select = document.getElementById('customerSelect');
+            select.innerHTML = '<option value="">Pilih Customer</option>';
+            
+            customers.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.name} - ${c.address}</option>`;
+            });
+            
+            document.getElementById('checkInModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('checkInModal').classList.remove('show');
+        }
+
+        async function confirmCheckIn() {
+            const customerId = document.getElementById('customerSelect').value;
+            const notes = document.getElementById('checkInNotes').value;
+            
+            if (!customerId) {
+                showToast('Pilih customer terlebih dahulu!', 'error');
+                return;
+            }
+            
+            try {
+                const result = await API.checkIn(customerId, notes);
+                closeModal();
+                
+                if (result.offline) {
+                    showToast('✓ Check-in tersimpan (Offline Mode)');
+                } else {
+                    showToast('✓ Check-in berhasil!');
+                }
+                
+                document.getElementById('btnCheckOut').disabled = false;
+                document.getElementById('currentStatus').textContent = 'On Visit';
+                updateUI();
+            } catch (error) {
+                showToast('Check-in gagal: ' + error.message, 'error');
+            }
+        }
+
+        async function checkOut() {
+            try {
+                const result = await API.checkOut();
+                
+                if (result.offline) {
+                    showToast('✓ Check-out tersimpan (Offline Mode)');
+                } else {
+                    showToast('✓ Check-out berhasil!');
+                }
+                
+                document.getElementById('btnCheckOut').disabled = true;
+                document.getElementById('currentStatus').textContent = 'Standby';
+                updateUI();
+            } catch (error) {
+                showToast('Check-out gagal: ' + error.message, 'error');
+            }
+        }
+
+        async function syncNow() {
+            showToast('Syncing data...');
+            
+            try {
+                // Upload offline actions first
+                await API.syncUpload();
+                
+                // Download latest data
+                const data = await API.syncDownload();
+                
+                showToast(`✓ Sync berhasil! ${data.stats.customers_count} customers, ${data.stats.products_count} products`);
+                updateUI();
+            } catch (error) {
+                showToast('Sync gagal, data offline tetap tersimpan', 'error');
+            }
+        }
+
+        function viewProducts() {
+            const products = LocalDB.getProducts();
+            let html = '<div class="modal show"><div class="modal-content">';
+            html += '<div class="modal-header">Stock Produk (Offline)</div>';
+            
+            products.forEach(p => {
+                html += `
+                    <div class="info-card">
+                        <strong>${p.name}</strong><br>
+                        <small>SKU: ${p.sku}</small><br>
+                        <small>Harga: Rp ${p.price.toLocaleString()}</small><br>
+                        <small>Stock: ${p.stock_warehouse} ${p.unit}</small>
+                    </div>
+                `;
+            });
+            
+            html += '<button class="btn btn-secondary" onclick="this.parentElement.parentElement.remove()">Tutup</button>';
+            html += '</div></div>';
+            
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+
+        function updateUI() {
+            // Update customers list
+            const customers = LocalDB.getCustomers();
+            const customerList = document.getElementById('customerList');
+            customerList.innerHTML = '';
+            
+            customers.slice(0, 10).forEach(c => {
+                customerList.innerHTML += `
+                    <div class="customer-item">
+                        <div class="customer-name">${c.name}</div>
+                        <div class="customer-info">${c.address} • ${c.phone || 'No phone'}</div>
+                    </div>
+                `;
+            });
+            
+            // Update stats
+            document.getElementById('statCustomers').textContent = customers.length;
+            document.getElementById('statProducts').textContent = LocalDB.getProducts().length;
+            
+            // Update last sync
+            const lastSync = LocalDB.getLastSync();
+            if (lastSync) {
+                const date = new Date(lastSync);
+                document.getElementById('lastSync').textContent = 
+                    date.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+            }
+            
+            // Update checkout button state
+            const currentVisit = LocalDB.getCurrentVisit();
+            document.getElementById('btnCheckOut').disabled = !currentVisit;
+            document.getElementById('currentStatus').textContent = currentVisit ? 'On Visit' : 'Standby';
+        }
+
+        function updateOfflineQueueCount() {
+            const queue = LocalDB.getOfflineQueue();
+            document.getElementById('offlineQueue').textContent = queue.length;
+        }
+
+        function updateOnlineStatus() {
+            const isOnline = navigator.onLine;
+            const statusDot = document.getElementById('onlineStatus');
+            const statusText = document.getElementById('onlineText');
+            
+            if (isOnline) {
+                statusDot.classList.remove('offline');
+                statusText.textContent = 'Online';
+            } else {
+                statusDot.classList.add('offline');
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        window.addEventListener('online', () => {
+            updateOnlineStatus();
+            showToast('✓ Kembali online! Auto-syncing...');
+            syncNow();
+        });
+
+        window.addEventListener('offline', () => {
+            updateOnlineStatus();
+            showToast('⚠ Offline mode - Data akan disimpan lokal', 'error');
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            updateOnlineStatus();
+            updateOfflineQueueCount();
+            
+            // Auto sync if online and no data
+            if (navigator.onLine && LocalDB.getCustomers().length === 0) {
+                syncNow();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAJAH NUSA - ERP Test</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            text-align: center;
+            color: #27ae60;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            background: #27ae60;
+            color: white;
+            border-radius: 4px;
+            text-align: center;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const TestApp = () => {
+            const [status, setStatus] = useState('File berhasil dimuat!');
+            
+            return (
+                <div className="container">
+                    <div className="logo">🐘 GAJAH NUSA ERP</div>
+                    <div className="status">{status}</div>
+                    <h2>Dashboard Test</h2>
+                    <p>Jika Anda melihat halaman ini, berarti file HTML sudah berfungsi dengan baik.</p>
+                    <button 
+                        onClick={() => setStatus('React berfungsi dengan baik!')}
+                        style={{
+                            padding: '10px 20px',
+                            background: '#27ae60',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Test React
+                    </button>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<TestApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

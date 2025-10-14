@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Order Form</title>
+</head>
+<body>
+    <h3>Test Order Management</h3>
+    
+    <div>
+        <label>Nama Barang:</label>
+        <select id="productSelect">
+            <option value="">-- Pilih Barang --</option>
+            <option value="pipa_pvc" data-unit="btg" data-price="45000">Pipa PVC</option>
+            <option value="tangki_air" data-unit="pcs" data-price="850000">Tangki Air</option>
+        </select>
+    </div>
+    
+    <div style="margin: 10px 0;">
+        <input type="number" id="quantity" placeholder="Qty" style="width: 60px; padding: 8px;">
+        <input type="text" id="unit" placeholder="Satuan" readonly style="width: 80px; padding: 8px; background: #f5f5f5;">
+        <input type="number" id="hargaJual" placeholder="Harga Jual" style="width: 120px; padding: 8px;">
+    </div>
+    
+    <div>
+        <strong>Field yang diubah: "Harga Pokok" → "Harga Jual" ✅</strong>
+    </div>
+</body>
+</html>

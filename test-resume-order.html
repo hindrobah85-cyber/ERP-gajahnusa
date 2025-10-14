@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Resume Order - GAJAH NUSA ERP</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .button { padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 10px 5px; cursor: pointer; }
+        .button:hover { background: #45a049; }
+        .button.blue { background: #2196F3; }
+        .button.blue:hover { background: #1976D2; }
+        .form-group { margin: 15px 0; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { padding: 10px; width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        .form-row { display: flex; gap: 10px; align-items: end; }
+        .form-row input, .form-row select { margin: 0; }
+        .order-item { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 4px; background: #f9f9f9; }
+        .order-summary { background: #e8f5e8; border: 2px solid #4CAF50; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .step { background: #e3f2fd; padding: 15px; margin: 10px 0; border-radius: 4px; border-left: 4px solid #2196F3; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Test Resume Order - Step by Step</h1>
+        
+        <div class="step">
+            <strong>📋 Langkah Testing:</strong><br>
+            1. Pilih customer<br>
+            2. Pilih barang dan isi quantity<br>
+            3. Klik "Tambah Barang" (bisa berulang untuk beberapa barang)<br>
+            4. Gunakan "Hapus" jika ada yang salah<br>
+            5. Klik "Fix Order" untuk submit langsung ke admin
+        </div>
+
+        <div class="form-group">
+            <label>📋 Order #: <span id="orderNumber" style="color: #4CAF50;">ORD-2025-0001</span></label>
+            <label>📅 Tanggal: 09/09/2025</label>
+        </div>
+
+        <div class="form-group">
+            <label>👤 Customer:</label>
+            <select id="customerSelect">
+                <option>Toko Maju Jaya</option>
+                <option>Warung Berkah</option>
+                <option>Minimarket Sari</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>🛍️ Pilih Barang:</label>
+            <select id="productSelect" onchange="selectProduct()">
+                <option value="">-- Pilih Barang --</option>
+                <option value="pipa_pvc" data-unit="btg" data-price="45000">Pipa PVC</option>
+                <option value="tangki_air" data-unit="pcs" data-price="850000">Tangki Air</option>
+                <option value="kran_air" data-unit="pcs" data-price="25000">Kran Air</option>
+                <option value="pipa_hdpe" data-unit="meter" data-price="12000">Pipa HDPE</option>
+                <option value="galvalum" data-unit="meter" data-price="85000">Galvalum</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <div style="flex: 1;">
+                <label>📊 Qty:</label>
+                <input type="number" id="quantity" placeholder="Jumlah" min="1">
+            </div>
+            <div style="flex: 1;">
+                <label>📏 Satuan:</label>
+                <input type="text" id="unit" placeholder="Satuan" readonly style="background: #f5f5f5;">
+            </div>
+            <div style="flex: 1;">
+                <label>💰 Harga Jual:</label>
+                <input type="number" id="hargaJual" placeholder="Harga Jual" oninput="checkPriceChange()">
+                <div id="priceStatus" style="font-size: 11px; margin-top: 2px; display: none;"></div>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="button" onclick="addToOrder()">➕ Tambah</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h3>📋 Daftar Barang Order:</h3>
+            <div id="orderItemsList">
+                <div style="color: #888; text-align: center; padding: 20px; border: 1px dashed #ddd; border-radius: 4px;">
+                    Belum ada barang yang ditambahkan
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button id="fixOrderBtn" class="button hidden" onclick="fixOrder()">✅ Fix Order (Submit ke Admin)</button>
+        </div>
+
+        <div id="orderSummary" class="order-summary hidden">
+            <h3>💰 Konfirmasi Order:</h3>
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let orderItems = [];
+        let orderCounter = 1;
+        let currentProductData = null;
+
+        // Product price settings from admin (simulation)
+        const productPriceSettings = {
+            'pipa_pvc': { canChangePrice: true, minPrice: 40000, standardPrice: 45000 },
+            'tangki_air': { canChangePrice: false, minPrice: 850000, standardPrice: 850000 },
+            'kran_air': { canChangePrice: true, minPrice: 20000, standardPrice: 25000 },
+            'pipa_hdpe': { canChangePrice: true, minPrice: 10000, standardPrice: 12000 },
+            'galvalum': { canChangePrice: false, minPrice: 85000, standardPrice: 85000 }
+        };
+
+        function selectProduct() {
+            const select = document.getElementById('productSelect');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption.value) {
+                currentProductData = {
+                    value: selectedOption.value,
+                    name: selectedOption.text,
+                    unit: selectedOption.dataset.unit,
+                    standardPrice: parseInt(selectedOption.dataset.price)
+                };
+                
+                document.getElementById('unit').value = currentProductData.unit;
+                document.getElementById('hargaJual').value = currentProductData.standardPrice;
+                
+                // Reset price status
+                document.getElementById('priceStatus').style.display = 'none';
+                
+                // Check if price can be changed
+                const settings = productPriceSettings[currentProductData.value];
+                const hargaJualInput = document.getElementById('hargaJual');
+                
+                if (!settings || !settings.canChangePrice) {
+                    hargaJualInput.readOnly = true;
+                    hargaJualInput.style.background = '#f5f5f5';
+                    hargaJualInput.title = 'Harga tidak dapat diubah untuk produk ini';
+                } else {
+                    hargaJualInput.readOnly = false;
+                    hargaJualInput.style.background = 'white';
+                    hargaJualInput.title = `Harga dapat diubah (minimal: Rp ${settings.minPrice.toLocaleString()})`;
+                }
+            } else {
+                currentProductData = null;
+                document.getElementById('unit').value = '';
+                document.getElementById('hargaJual').value = '';
+                document.getElementById('priceStatus').style.display = 'none';
+            }
+        }
+
+        function checkPriceChange() {
+            if (!currentProductData) return;
+            
+            const hargaJual = parseInt(document.getElementById('hargaJual').value);
+            const priceStatus = document.getElementById('priceStatus');
+            const settings = productPriceSettings[currentProductData.value];
+            
+            if (!settings || !settings.canChangePrice) return;
+            
+            if (hargaJual !== currentProductData.standardPrice) {
+                if (hargaJual < settings.minPrice) {
+                    priceStatus.innerHTML = `⚠️ Harga di bawah minimum (Rp ${settings.minPrice.toLocaleString()})`;
+                    priceStatus.style.color = '#f44336';
+                    priceStatus.style.display = 'block';
+                } else {
+                    priceStatus.innerHTML = '📋 Status: Pengajuan Harga Diperlukan';
+                    priceStatus.style.color = '#ff9800';
+                    priceStatus.style.display = 'block';
+                }
+            } else {
+                priceStatus.style.display = 'none';
+            }
+        }
+
+        function addToOrder() {
+            const productSelect = document.getElementById('productSelect');
+            const quantity = document.getElementById('quantity').value;
+            const unit = document.getElementById('unit').value;
+            const hargaJual = parseInt(document.getElementById('hargaJual').value);
+            
+            if (!productSelect.value || !quantity || !hargaJual) {
+                alert('❌ Mohon lengkapi semua field!\n\n• Pilih barang\n• Isi quantity\n• Pastikan harga jual terisi');
+                return;
+            }
+            
+            const settings = productPriceSettings[currentProductData.value];
+            
+            // Check minimum price
+            if (settings && settings.canChangePrice && hargaJual < settings.minPrice) {
+                alert(`❌ Harga terlalu rendah!\n\nHarga minimal untuk ${currentProductData.name}: Rp ${settings.minPrice.toLocaleString()}`);
+                return;
+            }
+            
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const productName = selectedOption.text;
+            const total = parseInt(quantity) * hargaJual;
+            
+            // Check if price approval needed
+            let priceApprovalStatus = null;
+            if (settings && settings.canChangePrice && hargaJual !== currentProductData.standardPrice) {
+                priceApprovalStatus = {
+                    needed: true,
+                    standardPrice: currentProductData.standardPrice,
+                    requestedPrice: hargaJual,
+                    status: 'pending' // pending, approved, rejected
+                };
+            }
+            
+            const orderItem = {
+                id: Date.now(),
+                product: productName,
+                productValue: currentProductData.value,
+                quantity: parseInt(quantity),
+                unit: unit,
+                hargaJual: hargaJual,
+                total: total,
+                priceApproval: priceApprovalStatus
+            };
+            
+            orderItems.push(orderItem);
+            updateOrderDisplay();
+            clearProductForm();
+            
+            // Show fix order button
+            document.getElementById('fixOrderBtn').classList.remove('hidden');
+            
+            let alertMessage = `✅ Barang berhasil ditambahkan!\n\n${productName}\n${quantity} ${unit} × Rp ${hargaJual.toLocaleString()}\nSubtotal: Rp ${total.toLocaleString()}`;
+            
+            if (priceApprovalStatus) {
+                alertMessage += `\n\n⚠️ PENGAJUAN HARGA DIPERLUKAN\nHarga standar: Rp ${priceApprovalStatus.standardPrice.toLocaleString()}\nHarga diminta: Rp ${priceApprovalStatus.requestedPrice.toLocaleString()}`;
+            }
+            
+            alertMessage += '\n\nTambah barang lain atau klik "Fix Order" untuk submit!';
+            
+            alert(alertMessage);
+        }
+
+        function updateOrderDisplay() {
+            const orderList = document.getElementById('orderItemsList');
+            
+            if (orderItems.length === 0) {
+                orderList.innerHTML = '<div style="color: #888; text-align: center; padding: 20px; border: 1px dashed #ddd; border-radius: 4px;">Belum ada barang yang ditambahkan</div>';
+                return;
+            }
+            
+            let html = '';
+            orderItems.forEach((item, index) => {
+                let priceStatusHtml = '';
+                if (item.priceApproval && item.priceApproval.needed) {
+                    let statusColor = '#ff9800';
+                    let statusText = 'Pending Approval';
+                    
+                    if (item.priceApproval.status === 'approved') {
+                        statusColor = '#4CAF50';
+                        statusText = 'Approved';
+                    } else if (item.priceApproval.status === 'rejected') {
+                        statusColor = '#f44336';
+                        statusText = 'Rejected';
+                    }
+                    
+                    priceStatusHtml = `<br><small style="color: ${statusColor};">📋 Pengajuan Harga: ${statusText}</small>`;
+                }
+                
+                html += `
+                    <div class="order-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${item.product}</strong><br>
+                                <small>${item.quantity} ${item.unit} × Rp ${item.hargaJual.toLocaleString()}</small>
+                                ${priceStatusHtml}
+                            </div>
+                            <div style="text-align: right;">
+                                <strong style="color: #4CAF50;">Rp ${item.total.toLocaleString()}</strong><br>
+                                <button onclick="removeOrderItem(${item.id})" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">🗑️ Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            orderList.innerHTML = html;
+        }
+
+        function removeOrderItem(itemId) {
+            if (confirm('Yakin ingin menghapus item ini?')) {
+                orderItems = orderItems.filter(item => item.id !== itemId);
+                updateOrderDisplay();
+                
+                if (orderItems.length === 0) {
+                    document.getElementById('fixOrderBtn').classList.add('hidden');
+                    document.getElementById('orderSummary').classList.add('hidden');
+                }
+            }
+        }
+
+        function clearProductForm() {
+            document.getElementById('productSelect').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('unit').value = '';
+            document.getElementById('hargaJual').value = '';
+            document.getElementById('priceStatus').style.display = 'none';
+            currentProductData = null;
+            
+            // Reset price input to editable
+            const hargaJualInput = document.getElementById('hargaJual');
+            hargaJualInput.readOnly = false;
+            hargaJualInput.style.background = 'white';
+            hargaJualInput.title = '';
+        }
+
+        function fixOrder() {
+            if (orderItems.length === 0) {
+                alert('❌ Belum ada barang dalam order!\n\nSilahkan tambah barang terlebih dahulu.');
+                return;
+            }
+            
+            const customer = document.getElementById('customerSelect').value;
+            const orderNumber = document.getElementById('orderNumber').textContent;
+            const grandTotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+            
+            // Check for pending price approvals
+            const pendingApprovals = orderItems.filter(item => item.priceApproval && item.priceApproval.needed && item.priceApproval.status === 'pending');
+            
+            if (pendingApprovals.length > 0) {
+                // Show confirmation summary with price approvals
+                let summaryHtml = `
+                    <div style="border: 1px solid #ff9800; padding: 15px; border-radius: 4px; background: #fff3e0; margin: 15px 0;">
+                        <h4 style="margin: 0 0 10px 0; color: #ff9800;">⚠️ PENGAJUAN HARGA DIPERLUKAN</h4>
+                        <strong>📋 Order Number:</strong> ${orderNumber}<br>
+                        <strong>👤 Customer:</strong> ${customer}<br>
+                        <strong>📦 Total Items:</strong> ${orderItems.length}<br><br>
+                        
+                        <h4 style="color: #f44336;">🔍 Items dengan Pengajuan Harga:</h4>
+                `;
+                
+                pendingApprovals.forEach((item, index) => {
+                    summaryHtml += `
+                        <div style="margin: 5px 0; padding: 8px; background: #ffebee; border-radius: 4px; border-left: 3px solid #f44336;">
+                            <strong>${item.product}</strong><br>
+                            Harga Standar: Rp ${item.priceApproval.standardPrice.toLocaleString()}<br>
+                            <strong>Harga Diminta: Rp ${item.priceApproval.requestedPrice.toLocaleString()}</strong>
+                        </div>
+                    `;
+                });
+                
+                summaryHtml += `
+                        <div style="margin: 15px 0; padding: 10px; background: #e3f2fd; border-radius: 4px;">
+                            <strong>📱 Notifikasi akan dikirim ke:</strong><br>
+                            • Supervisor (Pop-up approval)<br>
+                            • Admin Desktop (Notification)
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('summaryContent').innerHTML = summaryHtml;
+                document.getElementById('orderSummary').classList.remove('hidden');
+                
+                if (confirm(`⚠️ ORDER MEMERLUKAN PENGAJUAN HARGA!\n\n📋 ${orderNumber}\n👤 Customer: ${customer}\n🔍 Items pengajuan: ${pendingApprovals.length}\n\nOrder akan dikirim ke supervisor untuk approval harga.\nLanjutkan submit?`)) {
+                    
+                    // Simulate supervisor approval process
+                    simulateSupervisorApproval(orderNumber, customer, grandTotal, pendingApprovals);
+                }
+            } else {
+                // Normal order without price approvals
+                let summaryHtml = `
+                    <div style="border: 1px solid #4CAF50; padding: 15px; border-radius: 4px; background: white; margin: 15px 0;">
+                        <h4 style="margin: 0 0 10px 0; color: #4CAF50;">📋 Konfirmasi Order</h4>
+                        <strong>📋 Order Number:</strong> ${orderNumber}<br>
+                        <strong>📅 Tanggal:</strong> 09/09/2025<br>
+                        <strong>👤 Customer:</strong> ${customer}<br>
+                        <strong>📦 Total Items:</strong> ${orderItems.length}<br><br>
+                        
+                        <h4 style="color: #2196F3;">🛍️ Rincian Barang:</h4>
+                `;
+                
+                orderItems.forEach((item, index) => {
+                    summaryHtml += `
+                        <div style="margin: 5px 0; padding: 8px; background: #f9f9f9; border-radius: 4px;">
+                            <strong>${index + 1}. ${item.product}</strong> - ${item.quantity} ${item.unit} × Rp ${item.hargaJual.toLocaleString()} = <strong>Rp ${item.total.toLocaleString()}</strong>
+                        </div>
+                    `;
+                });
+                
+                summaryHtml += `
+                        <hr style="margin: 15px 0; border: 1px solid #4CAF50;">
+                        <div style="font-size: 18px; font-weight: bold; color: #4CAF50; text-align: center; padding: 10px; background: #e8f5e8; border-radius: 4px;">
+                            💰 JUMLAH TOTAL: Rp ${grandTotal.toLocaleString()}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('summaryContent').innerHTML = summaryHtml;
+                document.getElementById('orderSummary').classList.remove('hidden');
+                
+                if (confirm(`Konfirmasi Submit Order?\n\n📋 ${orderNumber}\n👤 Customer: ${customer}\n💰 Total: Rp ${grandTotal.toLocaleString()}\n📦 Items: ${orderItems.length}\n\nOrder akan dikirim ke admin untuk diproses.`)) {
+                    alert(`✅ ORDER BERHASIL DIKIRIM KE ADMIN!\n\n📋 ${orderNumber}\n👤 Customer: ${customer}\n💰 Total: Rp ${grandTotal.toLocaleString()}\n📦 Items: ${orderItems.length}\n\n🔄 Status: Menunggu konfirmasi admin\n📱 Notifikasi akan dikirim setelah diproses\n\n🎉 Terima kasih!`);
+                    
+                    // Reset order
+                    resetOrder();
+                }
+            }
+        }
+
+        function simulateSupervisorApproval(orderNumber, customer, grandTotal, pendingApprovals) {
+            // Simulate supervisor popup approval
+            setTimeout(() => {
+                alert('📱 SUPERVISOR NOTIFICATION\n\nPengajuan harga baru diterima!\nSilahkan cek aplikasi supervisor untuk approval.');
+                
+                // Simulate supervisor decision
+                setTimeout(() => {
+                    const supervisorDecision = confirm(`👔 SUPERVISOR APPROVAL\n\nOrder: ${orderNumber}\nCustomer: ${customer}\n\nApprove pengajuan harga?\n\n✅ OK = Approve\n❌ Cancel = Reject/Set minimum price`);
+                    
+                    if (supervisorDecision) {
+                        // Approve all pending price requests
+                        pendingApprovals.forEach(item => {
+                            const orderItem = orderItems.find(oi => oi.id === item.id);
+                            if (orderItem && orderItem.priceApproval) {
+                                orderItem.priceApproval.status = 'approved';
+                            }
+                        });
+                        
+                        updateOrderDisplay();
+                        
+                        alert(`✅ PENGAJUAN HARGA DISETUJUI!\n\n📋 ${orderNumber}\n👤 Customer: ${customer}\n💰 Total: Rp ${grandTotal.toLocaleString()}\n\n🔄 Order dilanjutkan ke admin untuk diproses\n📱 Status pengajuan harga: APPROVED`);
+                        
+                        // Reset order
+                        resetOrder();
+                        
+                    } else {
+                        // Reject or set minimum price
+                        const action = confirm('👔 SUPERVISOR ACTION\n\n✅ OK = Set harga minimum\n❌ Cancel = Batalkan order');
+                        
+                        if (action) {
+                            alert('📝 Supervisor memasukkan harga minimal jual...\n\nHarga disesuaikan dengan kebijakan perusahaan.');
+                            
+                            // Set minimum prices
+                            pendingApprovals.forEach(item => {
+                                const orderItem = orderItems.find(oi => oi.id === item.id);
+                                const settings = productPriceSettings[item.productValue];
+                                
+                                if (orderItem && settings) {
+                                    orderItem.hargaJual = settings.minPrice;
+                                    orderItem.total = orderItem.quantity * settings.minPrice;
+                                    orderItem.priceApproval.status = 'approved';
+                                    orderItem.priceApproval.requestedPrice = settings.minPrice;
+                                }
+                            });
+                            
+                            updateOrderDisplay();
+                            
+                            const newTotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+                            alert(`✅ HARGA DISESUAIKAN SUPERVISOR!\n\n📋 ${orderNumber}\n👤 Customer: ${customer}\n💰 Total baru: Rp ${newTotal.toLocaleString()}\n\n🔄 Order dilanjutkan ke admin\n📝 Harga disesuaikan ke harga minimal`);
+                            
+                            // Reset order
+                            resetOrder();
+                            
+                        } else {
+                            alert(`❌ ORDER DIBATALKAN!\n\n📋 ${orderNumber}\nAlasan: Pengajuan harga ditolak supervisor\n\n📝 Silahkan buat order baru dengan harga yang sesuai`);
+                            
+                            // Reset order
+                            resetOrder();
+                        }
+                    }
+                }, 2000);
+                
+            }, 1000);
+        }
+
+        function resetOrder() {
+            orderItems = [];
+            updateOrderDisplay();
+            document.getElementById('orderSummary').classList.add('hidden');
+            document.getElementById('fixOrderBtn').classList.add('hidden');
+            clearProductForm();
+            
+            // Generate new order number
+            orderCounter++;
+            document.getElementById('orderNumber').textContent = `ORD-2025-${String(orderCounter).padStart(4, '0')}`;
+        }
+    </script>
+</body>
+</html>

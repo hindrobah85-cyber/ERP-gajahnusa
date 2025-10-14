@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAJAH NUSA ERP - Sales Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .app-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            padding: 15px 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn.disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .nav-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .store-list {
+            margin-bottom: 20px;
+        }
+
+        .store-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .store-item:hover {
+            background: #e9ecef;
+        }
+
+        .store-item.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .store-checkbox {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .store-info h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .store-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .route-info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .route-info h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .tagihan-list {
+            margin-bottom: 20px;
+        }
+
+        .tagihan-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tagihan-item:hover {
+            background: #e9ecef;
+        }
+
+        .tagihan-item.selected {
+            background: #e8f5e8;
+            border-color: #28a745;
+        }
+
+        .tagihan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .tagihan-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-terlambat {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-lancar {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .payment-form {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .payment-method {
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .payment-method.selected {
+            border-color: #28a745;
+            background: #e8f5e8;
+        }
+
+        .file-upload {
+            margin: 15px 0;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .camera-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .photo-preview {
+            display: inline-block;
+            margin: 5px;
+            position: relative;
+        }
+
+        .photo-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .period-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .period-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .period-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .order-list {
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .order-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .order-kunjungan {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .order-telpon {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🐘</div>
+            <h1 class="app-title">GAJAH NUSA ERP</h1>
+            <p class="app-subtitle">Sales Mobile Application</p>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="card">
+            <h2 style="text-align: center; margin-bottom: 25px; color: #333;">Login Sales</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Employee ID</label>
+                <input type="text" id="employeeId" class="form-input" placeholder="Masukkan Employee ID" value="EMP001">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Masukkan Password" value="password123">
+            </div>
+
+            <button onclick="login()" class="btn btn-primary">🔐 Login</button>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="register_fixed.html" style="color: #667eea; text-decoration: none;">Belum punya akun? Daftar di sini</a>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <div class="card">
+                <h3 style="margin-bottom: 20px; text-align: center;">Dashboard Sales</h3>
+                
+                <div class="nav-grid">
+                    <button onclick="showCallPlan()" class="nav-btn">📍 Call Plan</button>
+                    <button onclick="showTagihan()" class="nav-btn" id="tagihanBtn">💳 Tagihan</button>
+                    <button onclick="showOrderan()" class="nav-btn" id="orderanBtn">📦 Orderan</button>
+                    <button onclick="showOrderTelpon()" class="nav-btn" id="orderTelponBtn">📞 Order Telpon</button>
+                    <button onclick="showInfo()" class="nav-btn">📊 Info</button>
+                    <button onclick="showPerforma()" class="nav-btn">📈 Performa</button>
+                </div>
+
+                <div id="callPlanAlert" class="alert alert-warning">
+                    ⚠️ Anda harus membuat Call Plan terlebih dahulu sebelum mengakses Tagihan dan Orderan!
+                </div>
+
+                <button onclick="logout()" class="btn logout-btn">🚪 Logout</button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="contentArea" class="content-area hidden">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        let isLoggedIn = false;
+        let currentUser = null;
+        let callPlanCreated = false;
+        let selectedStores = [];
+        let currentRoute = null;
+        let capturedPhotos = [];
+        let performanceData = {
+            daily: { visits: 8, orders: 5, bills: 3, newCustomers: 2 },
+            weekly: { visits: 35, orders: 24, bills: 18, newCustomers: 8 },
+            monthly: { visits: 142, orders: 98, bills: 76, newCustomers: 25 }
+        };
+        let currentPeriod = 'daily';
+
+        // Login Function
+        function login() {
+            const employeeId = document.getElementById('employeeId').value;
+            const password = document.getElementById('password').value;
+
+            if (employeeId === 'EMP001' && password === 'password123') {
+                isLoggedIn = true;
+                currentUser = {
+                    id: employeeId,
+                    name: 'Ahmad Salesman',
+                    department: 'Sales'
+                };
+
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                
+                updateDashboardButtons();
+                
+                alert('✅ Login berhasil! Selamat datang, ' + currentUser.name);
+            } else {
+                alert('❌ Login gagal! Gunakan EMP001 / password123');
+            }
+        }
+
+        // Logout Function
+        function logout() {
+            isLoggedIn = false;
+            currentUser = null;
+            callPlanCreated = false;
+            selectedStores = [];
+            currentRoute = null;
+            
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('contentArea').classList.add('hidden');
+            
+            alert('👋 Logout berhasil!');
+        }
+
+        // Update Dashboard Buttons
+        function updateDashboardButtons() {
+            const tagihanBtn = document.getElementById('tagihanBtn');
+            const orderanBtn = document.getElementById('orderanBtn');
+            const orderTelponBtn = document.getElementById('orderTelponBtn');
+            const alert = document.getElementById('callPlanAlert');
+            
+            if (callPlanCreated) {
+                tagihanBtn.classList.remove('disabled');
+                orderanBtn.classList.remove('disabled');
+                orderTelponBtn.classList.remove('disabled');
+                alert.style.display = 'none';
+            } else {
+                tagihanBtn.classList.add('disabled');
+                orderanBtn.classList.add('disabled');
+                orderTelponBtn.classList.add('disabled');
+                alert.style.display = 'block';
+            }
+        }
+
+        // Show Call Plan
+        function showCallPlan() {
+            const content = `
+                <div class="section-title">📍 Call Plan Dashboard</div>
+                
+                <div class="store-list">
+                    <div class="store-item" onclick="toggleStore(this, 'Toko Sari Rasa')">
+                        <input type="checkbox" class="store-checkbox">
+                        <div class="store-info">
+                            <h4>🏪 Toko Sari Rasa</h4>
+                            <p>📍 Jl. Merdeka No. 123, Jakarta Pusat</p>
+                            <p>📞 021-1234567 | 👤 Pak Budi</p>
+                            <p>⏰ Buka: 08:00 - 17:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="store-item" onclick="toggleStore(this, 'Warung Maju Jaya')">
+                        <input type="checkbox" class="store-checkbox">
+                        <div class="store-info">
+                            <h4>🏪 Warung Maju Jaya</h4>
+                            <p>📍 Jl. Sudirman No. 456, Jakarta Selatan</p>
+                            <p>📞 021-7654321 | 👤 Bu Siti</p>
+                            <p>⏰ Buka: 07:00 - 19:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="store-item" onclick="toggleStore(this, 'Toko Berkah')">
+                        <input type="checkbox" class="store-checkbox">
+                        <div class="store-info">
+                            <h4>🏪 Toko Berkah</h4>
+                            <p>📍 Jl. Thamrin No. 789, Jakarta Barat</p>
+                            <p>📞 021-9876543 | 👤 Pak Ahmad</p>
+                            <p>⏰ Buka: 06:00 - 18:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="store-item" onclick="toggleStore(this, 'Minimarket Sejahtera')">
+                        <input type="checkbox" class="store-checkbox">
+                        <div class="store-info">
+                            <h4>🏪 Minimarket Sejahtera</h4>
+                            <p>📍 Jl. Gatot Subroto No. 321, Jakarta Timur</p>
+                            <p>📞 021-5678901 | 👤 Bu Linda</p>
+                            <p>⏰ Buka: 24 Jam</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="generateRoute()" class="btn btn-primary">🗺️ Generate Rute GPS</button>
+                
+                <div id="routeDisplay" class="route-info hidden">
+                    <h4>🗺️ Rute Kunjungan</h4>
+                    <div id="routeDetails"></div>
+                    <button onclick="editRoute()" class="btn btn-secondary">✏️ Edit Rute</button>
+                    <button onclick="fixCallPlan()" class="btn btn-success">✅ Fix Call Plan</button>
+                </div>
+            `;
+            
+            showContent(content);
+        }
+
+        // Toggle Store Selection
+        function toggleStore(element, storeName) {
+            const checkbox = element.querySelector('.store-checkbox');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                element.classList.add('selected');
+                if (!selectedStores.includes(storeName)) {
+                    selectedStores.push(storeName);
+                }
+            } else {
+                element.classList.remove('selected');
+                selectedStores = selectedStores.filter(store => store !== storeName);
+            }
+        }
+
+        // Generate Route
+        function generateRoute() {
+            if (selectedStores.length === 0) {
+                alert('❌ Pilih minimal 1 toko untuk dikunjungi!');
+                return;
+            }
+            
+            const routeDetails = selectedStores.map((store, index) => 
+                `<p>📍 <strong>Stop ${index + 1}:</strong> ${store}</p>`
+            ).join('');
+            
+            document.getElementById('routeDetails').innerHTML = `
+                <p>📍 <strong>Start:</strong> Kantor Pusat GAJAH NUSA</p>
+                ${routeDetails}
+                <p>🏁 <strong>Finish:</strong> Kembali ke Kantor</p>
+                <br>
+                <p>⏱️ <strong>Estimasi Waktu:</strong> ${selectedStores.length * 2} jam</p>
+                <p>🚗 <strong>Jarak Total:</strong> ${selectedStores.length * 15} km</p>
+            `;
+            
+            document.getElementById('routeDisplay').classList.remove('hidden');
+            
+            alert(`🗺️ Rute GPS berhasil dibuat!\n📍 ${selectedStores.length} toko akan dikunjungi`);
+        }
+
+        // Edit Route
+        function editRoute() {
+            document.getElementById('routeDisplay').classList.add('hidden');
+            alert('✏️ Silahkan edit pilihan toko dan generate rute lagi');
+        }
+
+        // Fix Call Plan
+        function fixCallPlan() {
+            if (selectedStores.length === 0) {
+                alert('❌ Generate rute terlebih dahulu!');
+                return;
+            }
+            
+            callPlanCreated = true;
+            updateDashboardButtons();
+            
+            // Disable all checkboxes
+            document.querySelectorAll('.store-checkbox').forEach(checkbox => {
+                checkbox.disabled = true;
+            });
+            
+            alert(`✅ Call Plan berhasil di-fix!\n📍 ${selectedStores.length} toko siap dikunjungi\n\n🎯 Dashboard Tagihan dan Orderan sekarang dapat diakses!`);
+        }
+
+        // Show Tagihan
+        function showTagihan() {
+            if (!callPlanCreated) {
+                alert('❌ Buat Call Plan terlebih dahulu!');
+                return;
+            }
+            
+            const content = `
+                <div class="section-title">💳 Dashboard Tagihan</div>
+                
+                <div class="tagihan-list">
+                    <div class="tagihan-item" onclick="selectTagihan(this, 'INV-2025-001')">
+                        <div class="tagihan-header">
+                            <h4>🏪 Toko Sari Rasa</h4>
+                            <span class="tagihan-status status-terlambat">⚠️ Terlambat</span>
+                        </div>
+                        <p><strong>📄 No. Nota:</strong> INV-2025-001</p>
+                        <p><strong>📅 Tanggal Nota:</strong> 2025-08-15</p>
+                        <p><strong>⏰ Jumlah Hari:</strong> 26 hari</p>
+                        <p><strong>💰 Total Nota:</strong> Rp 2.500.000</p>
+                    </div>
+                    
+                    <div class="tagihan-item" onclick="selectTagihan(this, 'INV-2025-002')">
+                        <div class="tagihan-header">
+                            <h4>🏪 Warung Maju Jaya</h4>
+                            <span class="tagihan-status status-lancar">✅ Lancar</span>
+                        </div>
+                        <p><strong>📄 No. Nota:</strong> INV-2025-002</p>
+                        <p><strong>📅 Tanggal Nota:</strong> 2025-09-01</p>
+                        <p><strong>⏰ Jumlah Hari:</strong> 9 hari</p>
+                        <p><strong>💰 Total Nota:</strong> Rp 1.750.000</p>
+                    </div>
+                    
+                    <div class="tagihan-item" onclick="selectTagihan(this, 'INV-2025-003')">
+                        <div class="tagihan-header">
+                            <h4>🏪 Toko Berkah</h4>
+                            <span class="tagihan-status status-lancar">✅ Lancar</span>
+                        </div>
+                        <p><strong>📄 No. Nota:</strong> INV-2025-003</p>
+                        <p><strong>📅 Tanggal Nota:</strong> 2025-09-05</p>
+                        <p><strong>⏰ Jumlah Hari:</strong> 5 hari</p>
+                        <p><strong>💰 Total Nota:</strong> Rp 3.200.000</p>
+                    </div>
+                </div>
+                
+                <div id="paymentForm" class="payment-form">
+                    <h4>💳 Form Pembayaran</h4>
+                    <div id="selectedBill"></div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">💰 Jenis Pembayaran</label>
+                        <div>
+                            <label><input type="radio" name="paymentType" value="lunas"> ✅ Lunas</label>
+                            <label><input type="radio" name="paymentType" value="titip"> 📦 Titip</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">💳 Metode Pembayaran</label>
+                        <div class="payment-methods">
+                            <div class="payment-method" onclick="selectPaymentMethod(this, 'cash')">💵 Cash</div>
+                            <div class="payment-method" onclick="selectPaymentMethod(this, 'transfer')">🏦 Transfer</div>
+                            <div class="payment-method" onclick="selectPaymentMethod(this, 'cek')">📄 Cek</div>
+                            <div class="payment-method" onclick="selectPaymentMethod(this, 'giro')">📋 Giro</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">💰 Jumlah Pembayaran</label>
+                        <input type="number" id="paymentAmount" class="form-input" placeholder="Masukkan jumlah pembayaran">
+                    </div>
+                    
+                    <div id="fileUploadSection" class="file-upload hidden" onclick="document.getElementById('paymentProof').click()">
+                        <p>📸 Upload Bukti Pembayaran</p>
+                        <small>Klik untuk upload foto bukti transfer/cek/giro</small>
+                        <input type="file" id="paymentProof" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <button onclick="submitPayment()" class="btn btn-success">✅ Proses Pembayaran</button>
+                    <button onclick="hidePaymentForm()" class="btn btn-secondary">❌ Batal</button>
+                </div>
+            `;
+            
+            showContent(content);
+        }
+
+        // Select Tagihan
+        function selectTagihan(element, invoiceNo) {
+            // Remove previous selection
+            document.querySelectorAll('.tagihan-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select current item
+            element.classList.add('selected');
+            
+            // Show payment form
+            document.getElementById('paymentForm').style.display = 'block';
+            document.getElementById('selectedBill').innerHTML = `<strong>Tagihan terpilih:</strong> ${invoiceNo}`;
+        }
+
+        // Select Payment Method
+        function selectPaymentMethod(element, method) {
+            // Remove previous selection
+            document.querySelectorAll('.payment-method').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select current method
+            element.classList.add('selected');
+            
+            // Show file upload for transfer/cek/giro
+            const fileUploadSection = document.getElementById('fileUploadSection');
+            if (method === 'transfer' || method === 'cek' || method === 'giro') {
+                fileUploadSection.classList.remove('hidden');
+            } else {
+                fileUploadSection.classList.add('hidden');
+            }
+        }
+
+        // Hide Payment Form
+        function hidePaymentForm() {
+            document.getElementById('paymentForm').style.display = 'none';
+            document.querySelectorAll('.tagihan-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
+
+        // Submit Payment
+        function submitPayment() {
+            const paymentType = document.querySelector('input[name="paymentType"]:checked');
+            const paymentMethod = document.querySelector('.payment-method.selected');
+            const paymentAmount = document.getElementById('paymentAmount').value;
+            
+            if (!paymentType || !paymentMethod || !paymentAmount) {
+                alert('❌ Lengkapi semua field pembayaran!');
+                return;
+            }
+            
+            const methodText = paymentMethod.textContent;
+            const needsProof = methodText.includes('Transfer') || methodText.includes('Cek') || methodText.includes('Giro');
+            const proofFile = document.getElementById('paymentProof').files[0];
+            
+            if (needsProof && !proofFile) {
+                alert('❌ Upload bukti pembayaran untuk metode ini!');
+                return;
+            }
+            
+            // Simulate payment processing
+            alert('⏳ Memproses pembayaran...');
+            
+            setTimeout(() => {
+                let message = `✅ Pembayaran Berhasil Diproses!\n\n`;
+                message += `💰 Jumlah: Rp ${parseInt(paymentAmount).toLocaleString()}\n`;
+                message += `💳 Metode: ${methodText}\n`;
+                message += `📋 Jenis: ${paymentType.value === 'lunas' ? 'Lunas' : 'Titip'}\n\n`;
+                
+                if (methodText.includes('Transfer')) {
+                    message += `🏦 Status: Menunggu konfirmasi bank\n`;
+                    message += `📱 Customer akan dapat notifikasi WhatsApp setelah dana masuk rekening`;
+                } else if (methodText.includes('Cash')) {
+                    message += `💵 Status: Uang dibawa salesman\n`;
+                    message += `📱 Customer akan dapat konfirmasi setelah uang disetor ke rekening`;
+                } else {
+                    message += `📄 Status: Menunggu pencairan\n`;
+                    message += `📱 Customer akan dapat konfirmasi setelah cek/giro cair`;
+                }
+                
+                alert(message);
+                hidePaymentForm();
+            }, 2000);
+        }
+
+        // Show Orderan (Kunjungan)
+        function showOrderan() {
+            if (!callPlanCreated) {
+                alert('❌ Buat Call Plan terlebih dahulu!');
+                return;
+            }
+            
+            const content = `
+                <div class="section-title">📦 Orderan Kunjungan</div>
+                
+                <div class="alert alert-success">
+                    ℹ️ Orderan dari kunjungan langsung ke toko
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">🏪 Pilih Customer</label>
+                    <select class="form-select" id="customerSelect">
+                        <option value="">-- Pilih Customer --</option>
+                        <option value="Toko Sari Rasa">🏪 Toko Sari Rasa</option>
+                        <option value="Warung Maju Jaya">🏪 Warung Maju Jaya</option>
+                        <option value="Toko Berkah">🏪 Toko Berkah</option>
+                        <option value="Minimarket Sejahtera">🏪 Minimarket Sejahtera</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">📦 Pilih Produk</label>
+                    <select class="form-select" id="productSelect">
+                        <option value="">-- Pilih Produk --</option>
+                        <option value="Indomie Goreng" data-price="3500">🍜 Indomie Goreng - Rp 3.500</option>
+                        <option value="Teh Botol Sosro" data-price="4000">🧊 Teh Botol Sosro - Rp 4.000</option>
+                        <option value="Aqua 600ml" data-price="3000">💧 Aqua 600ml - Rp 3.000</option>
+                        <option value="Beras Premium" data-price="75000">🌾 Beras Premium - Rp 75.000</option>
+                        <option value="Minyak Goreng" data-price="25000">🛢️ Minyak Goreng - Rp 25.000</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">📊 Jumlah</label>
+                    <input type="number" id="quantityInput" class="form-input" placeholder="Masukkan jumlah" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">💰 Harga Satuan</label>
+                    <input type="number" id="priceInput" class="form-input" placeholder="Harga akan otomatis terisi">
+                </div>
+                
+                <button onclick="addOrderItem('kunjungan')" class="btn btn-primary">➕ Tambah Item</button>
+                
+                <div id="orderList" class="order-list">
+                    <h4>🛒 Daftar Order</h4>
+                    <div id="orderItems"></div>
+                    <div id="orderTotal"></div>
+                </div>
+                
+                <button onclick="submitOrder('kunjungan')" class="btn btn-success">🚀 Submit Order</button>
+            `;
+            
+            showContent(content);
+            setupOrderHandlers();
+        }
+
+        // Show Order Telpon
+        function showOrderTelpon() {
+            if (!callPlanCreated) {
+                alert('❌ Buat Call Plan terlebih dahulu!');
+                return;
+            }
+            
+            const content = `
+                <div class="section-title">📞 Order via Telepon</div>
+                
+                <div class="alert alert-success">
+                    ℹ️ Orderan yang masuk via telepon dengan format sama seperti kunjungan
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">📞 Nomor Telepon Customer</label>
+                    <input type="tel" id="customerPhone" class="form-input" placeholder="08xxxxxxxxxx">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">🏪 Nama Customer/Toko</label>
+                    <input type="text" id="customerName" class="form-input" placeholder="Nama toko/customer">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">📦 Pilih Produk</label>
+                    <select class="form-select" id="productSelectTelpon">
+                        <option value="">-- Pilih Produk --</option>
+                        <option value="Indomie Goreng" data-price="3500">🍜 Indomie Goreng - Rp 3.500</option>
+                        <option value="Teh Botol Sosro" data-price="4000">🧊 Teh Botol Sosro - Rp 4.000</option>
+                        <option value="Aqua 600ml" data-price="3000">💧 Aqua 600ml - Rp 3.000</option>
+                        <option value="Beras Premium" data-price="75000">🌾 Beras Premium - Rp 75.000</option>
+                        <option value="Minyak Goreng" data-price="25000">🛢️ Minyak Goreng - Rp 25.000</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">📊 Jumlah</label>
+                    <input type="number" id="quantityInputTelpon" class="form-input" placeholder="Masukkan jumlah" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">💰 Harga Satuan</label>
+                    <input type="number" id="priceInputTelpon" class="form-input" placeholder="Harga akan otomatis terisi">
+                </div>
+                
+                <button onclick="addOrderItem('telpon')" class="btn btn-primary">➕ Tambah Item</button>
+                
+                <div id="orderListTelpon" class="order-list">
+                    <h4>🛒 Daftar Order Telepon</h4>
+                    <div id="orderItemsTelpon"></div>
+                    <div id="orderTotalTelpon"></div>
+                </div>
+                
+                <button onclick="submitOrder('telpon')" class="btn btn-success">🚀 Submit Order Telepon</button>
+            `;
+            
+            showContent(content);
+            setupOrderHandlers();
+        }
+
+        // Setup Order Handlers
+        function setupOrderHandlers() {
+            // Auto-fill price when product is selected
+            const productSelects = document.querySelectorAll('#productSelect, #productSelectTelpon');
+            productSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const price = selectedOption.getAttribute('data-price');
+                    const priceInput = this.id === 'productSelect' ? 
+                        document.getElementById('priceInput') : 
+                        document.getElementById('priceInputTelpon');
+                    
+                    if (price && priceInput) {
+                        priceInput.value = price;
+                    }
+                });
+            });
+        }
+
+        // Add Order Item
+        let orderItems = [];
+        let orderCounter = 1;
+
+        function addOrderItem(type) {
+            const suffix = type === 'telpon' ? 'Telpon' : '';
+            const productSelect = document.getElementById(`productSelect${suffix}`);
+            const quantityInput = document.getElementById(`quantityInput${suffix}`);
+            const priceInput = document.getElementById(`priceInput${suffix}`);
+            
+            const product = productSelect.value;
+            const quantity = parseInt(quantityInput.value);
+            const price = parseInt(priceInput.value);
+            
+            if (!product || !quantity || !price) {
+                alert('❌ Lengkapi semua field produk!');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                product: product,
+                quantity: quantity,
+                price: price,
+                total: quantity * price,
+                type: type
+            };
+            
+            orderItems.push(item);
+            updateOrderDisplay(type);
+            
+            // Clear inputs
+            productSelect.value = '';
+            quantityInput.value = '';
+            priceInput.value = '';
+            
+            alert(`✅ ${product} berhasil ditambahkan ke order!`);
+        }
+
+        // Update Order Display
+        function updateOrderDisplay(type) {
+            const suffix = type === 'telpon' ? 'Telpon' : '';
+            const orderItemsContainer = document.getElementById(`orderItems${suffix}`);
+            const orderTotalContainer = document.getElementById(`orderTotal${suffix}`);
+            
+            const filteredItems = orderItems.filter(item => item.type === type);
+            
+            let itemsHtml = '';
+            let total = 0;
+            
+            filteredItems.forEach(item => {
+                total += item.total;
+                itemsHtml += `
+                    <div class="order-item">
+                        <span class="order-type ${item.type === 'telpon' ? 'order-telpon' : 'order-kunjungan'}">
+                            ${item.type === 'telpon' ? '📞 TELPON' : '🚶 KUNJUNGAN'}
+                        </span>
+                        <h5>${item.product}</h5>
+                        <p>Qty: ${item.quantity} x Rp ${item.price.toLocaleString()} = Rp ${item.total.toLocaleString()}</p>
+                        <button onclick="removeOrderItem(${item.id}, '${type}')" class="btn btn-danger" style="width: auto; padding: 5px 10px; margin-top: 5px;">🗑️ Hapus</button>
+                    </div>
+                `;
+            });
+            
+            orderItemsContainer.innerHTML = itemsHtml || '<p>Belum ada item order</p>';
+            orderTotalContainer.innerHTML = `<h4>💰 Total: Rp ${total.toLocaleString()}</h4>`;
+        }
+
+        // Remove Order Item
+        function removeOrderItem(itemId, type) {
+            orderItems = orderItems.filter(item => item.id !== itemId);
+            updateOrderDisplay(type);
+            alert('🗑️ Item berhasil dihapus!');
+        }
+
+        // Submit Order
+        function submitOrder(type) {
+            const filteredItems = orderItems.filter(item => item.type === type);
+            
+            if (filteredItems.length === 0) {
+                alert('❌ Tidak ada item untuk di-order!');
+                return;
+            }
+            
+            let customer = '';
+            if (type === 'telpon') {
+                const customerName = document.getElementById('customerName').value;
+                const customerPhone = document.getElementById('customerPhone').value;
+                
+                if (!customerName || !customerPhone) {
+                    alert('❌ Lengkapi nama dan nomor telepon customer!');
+                    return;
+                }
+                customer = `${customerName} (${customerPhone})`;
+            } else {
+                const customerSelect = document.getElementById('customerSelect');
+                customer = customerSelect.value;
+                
+                if (!customer) {
+                    alert('❌ Pilih customer terlebih dahulu!');
+                    return;
+                }
+            }
+            
+            const total = filteredItems.reduce((sum, item) => sum + item.total, 0);
+            const orderNumber = `ORD-${Date.now()}`;
+            
+            // Simulate order submission
+            alert('⏳ Memproses order...');
+            
+            setTimeout(() => {
+                let message = `✅ Order Berhasil Disubmit!\n\n`;
+                message += `📋 No. Order: ${orderNumber}\n`;
+                message += `🏪 Customer: ${customer}\n`;
+                message += `📞 Jenis: ${type === 'telpon' ? 'Order via Telepon' : 'Order via Kunjungan'}\n`;
+                message += `📦 Total Item: ${filteredItems.length}\n`;
+                message += `💰 Total Nilai: Rp ${total.toLocaleString()}\n\n`;
+                message += `📡 Order telah dikirim ke sistem!`;
+                
+                alert(message);
+                
+                // Clear order items for this type
+                orderItems = orderItems.filter(item => item.type !== type);
+                updateOrderDisplay(type);
+                
+                // Clear form
+                if (type === 'telpon') {
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerPhone').value = '';
+                } else {
+                    document.getElementById('customerSelect').value = '';
+                }
+            }, 2000);
+        }
+
+        // Show Info Dashboard
+        function showInfo() {
+            const content = `
+                <div class="section-title">📊 Dashboard Info</div>
+                
+                <div class="info-section">
+                    <h4>📦 Info Stock Toko</h4>
+                    <textarea id="stockInfo" class="form-textarea" placeholder="Masukkan info stock toko (produk habis, produk baru, dll)"></textarea>
+                    <button onclick="saveInfo('stock')" class="btn btn-primary">💾 Simpan Info Stock</button>
+                </div>
+                
+                <div class="info-section">
+                    <h4>🏪 Info Pesaing</h4>
+                    <textarea id="competitorInfo" class="form-textarea" placeholder="Masukkan info pesaing (harga, promo, strategi, dll)"></textarea>
+                    <button onclick="saveInfo('competitor')" class="btn btn-primary">💾 Simpan Info Pesaing</button>
+                </div>
+                
+                <div class="info-section">
+                    <h4>📸 Laporan Visual</h4>
+                    <div class="file-upload" onclick="document.getElementById('photoInput').click()">
+                        <p>📸 Ambil Foto Lapangan</p>
+                        <small>Klik untuk mengambil atau upload foto</small>
+                    </div>
+                    <input type="file" id="photoInput" accept="image/*" capture="camera" multiple style="display: none;">
+                    <div id="photoPreview" class="camera-preview"></div>
+                </div>
+                
+                <div class="info-section">
+                    <h4>📝 Info Lainnya</h4>
+                    <textarea id="otherInfo" class="form-textarea" placeholder="Informasi lain yang perlu dilaporkan"></textarea>
+                    <button onclick="saveInfo('other')" class="btn btn-primary">💾 Simpan Info Lainnya</button>
+                </div>
+                
+                <button onclick="submitAllInfo()" class="btn btn-success">🚀 Kirim Semua Laporan</button>
+            `;
+            
+            showContent(content);
+            setupPhotoHandlers();
+        }
+
+        // Setup Photo Handlers
+        function setupPhotoHandlers() {
+            document.getElementById('photoInput').addEventListener('change', function(e) {
+                const files = e.target.files;
+                const preview = document.getElementById('photoPreview');
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const photoDiv = document.createElement('div');
+                        photoDiv.className = 'photo-preview';
+                        photoDiv.innerHTML = `
+                            <img src="${e.target.result}" alt="Photo">
+                            <button class="remove-photo" onclick="removePhoto(this)">×</button>
+                        `;
+                        preview.appendChild(photoDiv);
+                        
+                        capturedPhotos.push({
+                            id: Date.now() + i,
+                            data: e.target.result,
+                            file: file
+                        });
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+                
+                if (files.length > 0) {
+                    alert(`📸 ${files.length} foto berhasil diambil!`);
+                }
+            });
+        }
+
+        // Remove Photo
+        function removePhoto(button) {
+            const photoDiv = button.parentElement;
+            photoDiv.remove();
+            alert('🗑️ Foto berhasil dihapus!');
+        }
+
+        // Save Info
+        function saveInfo(type) {
+            let infoText = '';
+            let infoName = '';
+            
+            switch(type) {
+                case 'stock':
+                    infoText = document.getElementById('stockInfo').value;
+                    infoName = 'Info Stock';
+                    break;
+                case 'competitor':
+                    infoText = document.getElementById('competitorInfo').value;
+                    infoName = 'Info Pesaing';
+                    break;
+                case 'other':
+                    infoText = document.getElementById('otherInfo').value;
+                    infoName = 'Info Lainnya';
+                    break;
+            }
+            
+            if (infoText.trim()) {
+                alert(`✅ ${infoName} berhasil disimpan!`);
+                console.log(`${infoName}:`, infoText);
+            } else {
+                alert(`❌ Masukkan ${infoName.toLowerCase()} terlebih dahulu!`);
+            }
+        }
+
+        // Submit All Info
+        function submitAllInfo() {
+            const stockInfo = document.getElementById('stockInfo')?.value || '';
+            const competitorInfo = document.getElementById('competitorInfo')?.value || '';
+            const otherInfo = document.getElementById('otherInfo')?.value || '';
+            const photoCount = capturedPhotos.length;
+            
+            if (!stockInfo && !competitorInfo && !otherInfo && photoCount === 0) {
+                alert('❌ Tidak ada informasi untuk dikirim!');
+                return;
+            }
+            
+            alert(`🚀 Semua laporan berhasil dikirim!\n\n📦 Info Stock: ${stockInfo ? '✅' : '❌'}\n🏪 Info Pesaing: ${competitorInfo ? '✅' : '❌'}\n📸 Foto: ${photoCount} gambar\n📝 Info Lainnya: ${otherInfo ? '✅' : '❌'}\n\n📡 Data telah dikirim ke server!`);
+        }
+
+        // Show Performance Dashboard
+        function showPerforma() {
+            const content = `
+                <div class="section-title">📈 Dashboard Performa</div>
+                
+                <div class="period-tabs">
+                    <div class="period-tab ${currentPeriod === 'daily' ? 'active' : ''}" onclick="changePeriod('daily')">Harian</div>
+                    <div class="period-tab ${currentPeriod === 'weekly' ? 'active' : ''}" onclick="changePeriod('weekly')">Mingguan</div>
+                    <div class="period-tab ${currentPeriod === 'monthly' ? 'active' : ''}" onclick="changePeriod('monthly')">Bulanan</div>
+                </div>
+                
+                <div class="performance-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="visitsStat">${performanceData[currentPeriod].visits}</div>
+                        <div class="stat-label">👥 Kunjungan</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="ordersStat">${performanceData[currentPeriod].orders}</div>
+                        <div class="stat-label">📦 Order</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="billsStat">${performanceData[currentPeriod].bills}</div>
+                        <div class="stat-label">💳 Tagihan</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="customersStat">${performanceData[currentPeriod].newCustomers}</div>
+                        <div class="stat-label">🆕 Customer Baru</div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h4>📊 Ringkasan Performa</h4>
+                    <div id="performanceSummary">
+                        ${generatePerformanceSummary()}
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h4>🎯 Target vs Pencapaian</h4>
+                    <div id="targetAnalysis">
+                        ${generateTargetAnalysis()}
+                    </div>
+                </div>
+            `;
+            
+            showContent(content);
+        }
+
+        // Change Period
+        function changePeriod(period) {
+            currentPeriod = period;
+            
+            // Update tab active state
+            document.querySelectorAll('.period-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update statistics
+            document.getElementById('visitsStat').textContent = performanceData[period].visits;
+            document.getElementById('ordersStat').textContent = performanceData[period].orders;
+            document.getElementById('billsStat').textContent = performanceData[period].bills;
+            document.getElementById('customersStat').textContent = performanceData[period].newCustomers;
+            
+            // Update summary
+            document.getElementById('performanceSummary').innerHTML = generatePerformanceSummary();
+            document.getElementById('targetAnalysis').innerHTML = generateTargetAnalysis();
+        }
+
+        // Generate Performance Summary
+        function generatePerformanceSummary() {
+            const data = performanceData[currentPeriod];
+            const conversionRate = Math.round((data.orders / data.visits) * 100);
+            const periodName = currentPeriod === 'daily' ? 'hari ini' : 
+                              currentPeriod === 'weekly' ? 'minggu ini' : 'bulan ini';
+            
+            return `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <p><strong>📈 Tingkat Konversi:</strong> ${conversionRate}% (${data.orders} order dari ${data.visits} kunjungan)</p>
+                    <p><strong>💰 Rata-rata Tagihan:</strong> ${Math.round(data.bills / data.visits * 100)}% dari kunjungan berhasil ditagih</p>
+                    <p><strong>🆕 Akuisisi Customer:</strong> ${data.newCustomers} customer baru ${periodName}</p>
+                    <p><strong>⭐ Performa:</strong> ${conversionRate >= 70 ? '🟢 Excellent' : conversionRate >= 50 ? '🟡 Good' : '🔴 Needs Improvement'}</p>
+                </div>
+            `;
+        }
+
+        // Generate Target Analysis
+        function generateTargetAnalysis() {
+            const data = performanceData[currentPeriod];
+            const targets = {
+                daily: { visits: 10, orders: 7, bills: 5, newCustomers: 3 },
+                weekly: { visits: 50, orders: 35, bills: 25, newCustomers: 10 },
+                monthly: { visits: 200, orders: 140, bills: 100, newCustomers: 30 }
+            };
+            
+            const target = targets[currentPeriod];
+            
+            return `
+                <div style="background: #f0f8ff; padding: 15px; border-radius: 8px;">
+                    <p><strong>👥 Kunjungan:</strong> ${data.visits}/${target.visits} ${data.visits >= target.visits ? '✅' : '❌'}</p>
+                    <p><strong>📦 Order:</strong> ${data.orders}/${target.orders} ${data.orders >= target.orders ? '✅' : '❌'}</p>
+                    <p><strong>💳 Tagihan:</strong> ${data.bills}/${target.bills} ${data.bills >= target.bills ? '✅' : '❌'}</p>
+                    <p><strong>🆕 Customer Baru:</strong> ${data.newCustomers}/${target.newCustomers} ${data.newCustomers >= target.newCustomers ? '✅' : '❌'}</p>
+                    <br>
+                    <p><strong>🎯 Pencapaian Target:</strong> ${Math.round(((data.visits + data.orders + data.bills + data.newCustomers) / (target.visits + target.orders + target.bills + target.newCustomers)) * 100)}%</p>
+                </div>
+            `;
+        }
+
+        // Show Content Function
+        function showContent(content) {
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = content;
+            contentArea.classList.remove('hidden');
+        }
+
+        // ==================== OFFLINE-FIRST FEATURES ====================
+        
+        // Local Storage Manager
+        const OfflineStorage = {
+            saveData(key, data) {
+                localStorage.setItem(key, JSON.stringify(data));
+            },
+            
+            getData(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            },
+            
+            saveCustomers(customers) {
+                this.saveData('offline_customers', customers);
+            },
+            
+            getCustomers() {
+                return this.getData('offline_customers') || [];
+            },
+            
+            saveProducts(products) {
+                this.saveData('offline_products', products);
+            },
+            
+            getProducts() {
+                return this.getData('offline_products') || [];
+            },
+            
+            addOfflineAction(action) {
+                const queue = this.getData('offline_queue') || [];
+                queue.push({
+                    ...action,
+                    timestamp: new Date().toISOString(),
+                    id: Date.now()
+                });
+                this.saveData('offline_queue', queue);
+                updateSyncIndicator();
+            },
+            
+            getOfflineQueue() {
+                return this.getData('offline_queue') || [];
+            },
+            
+            clearOfflineQueue() {
+                this.saveData('offline_queue', []);
+                updateSyncIndicator();
+            },
+            
+            setLastSync(time) {
+                this.saveData('last_sync', time);
+            },
+            
+            getLastSync() {
+                return this.getData('last_sync');
+            }
+        };
+
+        // Sync API Manager
+        const SyncAPI = {
+            baseUrl: 'http://localhost:8002/api',
+            
+            async downloadData(salesmanId) {
+                try {
+                    const response = await fetch(`${this.baseUrl}/sync/download`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({salesman_id: salesmanId})
+                    });
+                    
+                    if (!response.ok) throw new Error('Sync failed');
+                    
+                    const data = await response.json();
+                    
+                    // Save to local storage
+                    OfflineStorage.saveCustomers(data.data.customers);
+                    OfflineStorage.saveProducts(data.data.products);
+                    OfflineStorage.setLastSync(new Date().toISOString());
+                    
+                    return data;
+                } catch (error) {
+                    console.error('Download sync failed:', error);
+                    throw error;
+                }
+            },
+            
+            async uploadData() {
+                try {
+                    const queue = OfflineStorage.getOfflineQueue();
+                    if (queue.length === 0) return {success: true, count: 0};
+                    
+                    const response = await fetch(`${this.baseUrl}/sync/upload`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(queue)
+                    });
+                    
+                    if (!response.ok) throw new Error('Upload failed');
+                    
+                    const data = await response.json();
+                    OfflineStorage.clearOfflineQueue();
+                    
+                    return data;
+                } catch (error) {
+                    console.error('Upload sync failed:', error);
+                    throw error;
+                }
+            }
+        };
+
+        // Update sync indicator
+        function updateSyncIndicator() {
+            const queue = OfflineStorage.getOfflineQueue();
+            const queueCount = queue.length;
+            
+            // Update UI if sync indicator exists
+            const indicator = document.getElementById('syncIndicator');
+            if (indicator) {
+                indicator.textContent = queueCount > 0 ? `📤 ${queueCount} pending` : '✅ Synced';
+                indicator.style.color = queueCount > 0 ? '#ff9800' : '#28a745';
+            }
+        }
+
+        // Online/Offline status handler
+        window.addEventListener('online', async () => {
+            console.log('✅ Online - Auto syncing...');
+            await performSync();
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('⚠️ Offline mode - Data will be saved locally');
+        });
+
+        // Perform sync
+        async function performSync() {
+            const salesmanId = currentUser || 'SALES001';
+            
+            try {
+                // Upload offline data first
+                const uploadResult = await SyncAPI.uploadData();
+                console.log('Upload result:', uploadResult);
+                
+                // Download latest data
+                const downloadResult = await SyncAPI.downloadData(salesmanId);
+                console.log('Download result:', downloadResult);
+                
+                alert(`✅ Sync berhasil!\n${downloadResult.stats.customers_count} customers\n${downloadResult.stats.products_count} products`);
+                
+                updateSyncIndicator();
+            } catch (error) {
+                console.error('Sync error:', error);
+                alert('⚠️ Sync gagal, data tetap tersimpan offline');
+            }
+        }
+
+        // Add sync button to dashboard
+        function addSyncButton() {
+            const navGrid = document.querySelector('.nav-grid');
+            if (navGrid && !document.getElementById('syncBtn')) {
+                const syncBtn = document.createElement('button');
+                syncBtn.id = 'syncBtn';
+                syncBtn.className = 'nav-btn';
+                syncBtn.innerHTML = '🔄<br>Sync Data';
+                syncBtn.onclick = performSync;
+                navGrid.appendChild(syncBtn);
+                
+                // Add sync indicator
+                const header = document.querySelector('.header');
+                if (header && !document.getElementById('syncIndicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.id = 'syncIndicator';
+                    indicator.style.cssText = 'color: #28a745; font-size: 12px; margin-top: 10px;';
+                    indicator.textContent = '✅ Synced';
+                    header.appendChild(indicator);
+                }
+            }
+        }
+
+        // Override original login to add sync features
+        const originalShowDashboard = showDashboard;
+        showDashboard = function() {
+            originalShowDashboard();
+            addSyncButton();
+            updateSyncIndicator();
+            
+            // Auto sync on login if online
+            if (navigator.onLine) {
+                const lastSync = OfflineStorage.getLastSync();
+                const now = new Date();
+                const lastSyncDate = lastSync ? new Date(lastSync) : null;
+                
+                // Auto sync if last sync > 1 hour or never synced
+                if (!lastSyncDate || (now - lastSyncDate) > 3600000) {
+                    setTimeout(() => performSync(), 1000);
+                }
+            }
+        };
+
+        // Initialize
+        console.log('🐘 GAJAH NUSA ERP - Sales Mobile Ready!');
+        console.log('📱 Features: Call Plan, Tagihan, Orderan, Order Telpon, Info, Performa');
+        console.log('🔗 Login: EMP001 / password123');
+        console.log('💾 Offline-First: Enabled');
+        console.log('🔄 Auto-Sync: Every 1 hour or on login');
+        
+        // Initialize sync indicator on load
+        updateSyncIndicator();
+    </script>
+</body>
+</html>

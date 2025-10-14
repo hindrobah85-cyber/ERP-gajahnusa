@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login - Sales Mobile</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 400px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { padding: 12px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
+        .btn:hover { background: #0056b3; }
+        .dashboard { display: none; padding: 20px; background: #f8f9fa; border-radius: 5px; margin-top: 20px; }
+        .dashboard.active { display: block; }
+        .success { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Test Login Functionality</h2>
+        
+        <div id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Employee ID</label>
+                <input type="text" id="employeeId" class="form-input" value="EMP001">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" value="password123">
+            </div>
+            
+            <button onclick="login()" class="btn">Login</button>
+        </div>
+        
+        <div id="dashboard" class="dashboard">
+            <div class="success">✅ Login berhasil! Dashboard ditampilkan.</div>
+            <p>Selamat datang di dashboard sales mobile!</p>
+            <button onclick="logout()" class="btn">Logout</button>
+        </div>
+        
+        <div id="debug" style="margin-top: 20px; padding: 10px; background: #fff3cd; border-radius: 5px;">
+            <h4>Debug Info:</h4>
+            <div id="debugContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+        let currentUser = null;
+
+        function debug(message) {
+            const debugContent = document.getElementById('debugContent');
+            debugContent.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log(message);
+        }
+
+        function login() {
+            debug('Login function called');
+            
+            const employeeId = document.getElementById('employeeId').value;
+            const password = document.getElementById('password').value;
+            
+            debug('Employee ID: ' + employeeId + ', Password: ' + password);
+
+            if (employeeId === 'EMP001' && password === 'password123') {
+                debug('Credentials valid - proceeding with login');
+                
+                isLoggedIn = true;
+                currentUser = { id: employeeId, name: 'Ahmad Salesman' };
+                
+                debug('Hiding login form');
+                document.getElementById('loginForm').style.display = 'none';
+                
+                debug('Showing dashboard');
+                document.getElementById('dashboard').classList.add('active');
+                
+                debug('Login completed successfully');
+                alert('✅ Login berhasil!');
+            } else {
+                debug('Invalid credentials');
+                alert('❌ Login gagal! Gunakan EMP001 / password123');
+            }
+        }
+
+        function logout() {
+            debug('Logout function called');
+            
+            isLoggedIn = false;
+            currentUser = null;
+            
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').classList.remove('active');
+            
+            debug('Logout completed');
+            alert('Logout berhasil!');
+        }
+
+        // Initialize
+        debug('Page loaded - ready for testing');
+        
+        // Add Enter key support
+        document.addEventListener('DOMContentLoaded', function() {
+            ['employeeId', 'password'].forEach(id => {
+                document.getElementById(id).addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        debug('Enter key pressed on ' + id);
+                        login();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Demo Batch Payment - Sales Mobile</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1, h2 { color: #333; }
+        .example { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #007bff; }
+        .steps { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .step { margin: 10px 0; }
+        .highlight { background: #fff3cd; padding: 5px; border-radius: 4px; }
+        .result { background: #d4edda; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        code { background: #f1f3f4; padding: 2px 6px; border-radius: 4px; }
+        .warning { background: #f8d7da; padding: 10px; border-radius: 4px; color: #721c24; }
+        .success { background: #d1ecf1; padding: 10px; border-radius: 4px; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Demo Fitur Batch Payment - Sales Mobile</h1>
+        
+        <p>Fitur baru untuk memproses multiple faktur sekaligus telah ditambahkan! Sekarang salesman bisa membayar beberapa faktur dalam satu transaksi dengan alokasi otomatis.</p>
+        
+        <h2>🎯 Cara Menggunakan Batch Payment</h2>
+        
+        <div class="steps">
+            <h3>Langkah-langkah:</h3>
+            <div class="step">1. Login ke sistem dengan <code>EMP001</code> / <code>password123</code></div>
+            <div class="step">2. Klik <strong>💳 Tagihan</strong> di dashboard</div>
+            <div class="step">3. Pilih mode <strong>💳💳 Bayar Multiple</strong></div>
+            <div class="step">4. Centang faktur-faktur yang ingin dibayar</div>
+            <div class="step">5. Masukkan total jumlah pembayaran</div>
+            <div class="step">6. Sistem akan menghitung alokasi otomatis</div>
+            <div class="step">7. Pilih metode pembayaran dan proses</div>
+        </div>
+        
+        <h2>📋 Contoh Scenario yang Diimplementasikan</h2>
+        
+        <div class="example">
+            <h3>Contoh 1: Toko Sari Bumi (5 Faktur)</h3>
+            <p><strong>Skenario:</strong> Toko punya 5 faktur, customer membayar 2 faktur senilai total 3 juta</p>
+            <ul>
+                <li>INV-2025-011: Rp 1.500.000 ✅</li>
+                <li>INV-2025-012: Rp 1.500.000 ✅</li>
+                <li>INV-2025-013: Rp 2.000.000</li>
+                <li>INV-2025-014: Rp 1.500.000</li>
+                <li>INV-2025-015: Rp 2.500.000</li>
+            </ul>
+            
+            <div class="steps">
+                <strong>Langkah:</strong>
+                <div class="step">1. Pilih mode "Bayar Multiple"</div>
+                <div class="step">2. Centang INV-2025-011 dan INV-2025-012</div>
+                <div class="step">3. Masukkan pembayaran: <span class="highlight">Rp 3.000.000</span></div>
+            </div>
+            
+            <div class="result">
+                <strong>Hasil Alokasi:</strong><br>
+                ✅ INV-2025-011: LUNAS (Rp 1.500.000)<br>
+                ✅ INV-2025-012: LUNAS (Rp 1.500.000)<br>
+                <strong>Total 2 faktur LUNAS dengan pembayaran Rp 3.000.000</strong>
+            </div>
+        </div>
+        
+        <div class="example">
+            <h3>Contoh 2: Toko Samudra (6 Nota) - Prioritas Berdasarkan Tanggal</h3>
+            <p><strong>Skenario:</strong> Customer punya 6 nota dengan tanggal berbeda, bayar Rp 5.000.000</p>
+            <ul>
+                <li>INV-2025-018: Rp 1.500.000 (📅 2025-08-20 - TERLAMA)</li>
+                <li>INV-2025-016: Rp 2.000.000 (📅 2025-09-03)</li>
+                <li>INV-2025-017: Rp 2.000.000 (📅 2025-09-04)</li>
+                <li>INV-2025-019: Rp 2.500.000 (📅 2025-09-06)</li>
+                <li>INV-2025-020: Rp 1.000.000 (📅 2025-09-08)</li>
+                <li>INV-2025-021: Rp 3.000.000 (📅 2025-09-09 - TERBARU)</li>
+            </ul>
+            
+            <div class="steps">
+                <strong>Langkah:</strong>
+                <div class="step">1. Pilih mode "Bayar Multiple"</div>
+                <div class="step">2. Centang semua 6 nota (total Rp 12.000.000)</div>
+                <div class="step">3. Masukkan pembayaran: <span class="highlight">Rp 5.000.000</span></div>
+            </div>
+            
+            <div class="result">
+                <strong>Hasil Alokasi Berdasarkan Tanggal Terlama:</strong><br>
+                ✅ INV-2025-018 (2025-08-20): LUNAS (Rp 1.500.000) - Prioritas 1<br>
+                ✅ INV-2025-016 (2025-09-03): LUNAS (Rp 2.000.000) - Prioritas 2<br>
+                ⚠️ INV-2025-017 (2025-09-04): TITIP (Bayar: Rp 1.500.000, Sisa: Rp 500.000) - Prioritas 3<br>
+                ❌ INV-2025-019, INV-2025-020, INV-2025-021: BELUM BAYAR<br>
+                <strong>2 faktur LUNAS, 1 faktur TITIP (urutan berdasarkan yang terlama)</strong>
+            </div>
+        </div>
+        
+        <h2>💡 Algoritma Alokasi Pembayaran</h2>
+        
+        <div class="example">
+            <h3>Cara Sistem Menghitung:</h3>
+            <ol>
+                <li><strong>Urutkan faktur</strong> berdasarkan tanggal (terlama dahulu) 🗓️</li>
+                <li><strong>Prioritas pembayaran:</strong>
+                    <ul>
+                        <li>Faktur yang paling lama akan dibayar terlebih dahulu</li>
+                        <li>Jika pembayaran ≥ jumlah faktur → LUNAS</li>
+                        <li>Jika pembayaran < jumlah faktur → TITIP (sisa ada)</li>
+                        <li>Jika tidak ada sisa pembayaran → BELUM BAYAR</li>
+                    </ul>
+                </li>
+                <li><strong>Update status</strong> di UI secara real-time</li>
+            </ol>
+            
+            <div class="warning">
+                <strong>⚠️ Perubahan Penting:</strong><br>
+                Sistem sekarang mengutamakan faktur berdasarkan <strong>tanggal terlama</strong>, 
+                bukan berdasarkan jumlah terkecil. Ini memastikan customer melunasi hutang yang sudah lama terlebih dahulu.
+            </div>
+        </div>
+        
+        <h2>🎨 Fitur UI yang Ditambahkan</h2>
+        
+        <div class="success">
+            <h3>Mode Selection:</h3>
+            <ul>
+                <li>💳 <strong>Bayar 1 Faktur</strong> - Mode normal (seperti sebelumnya)</li>
+                <li>💳💳 <strong>Bayar Multiple</strong> - Mode batch payment baru</li>
+            </ul>
+        </div>
+        
+        <div class="success">
+            <h3>Visual Indicators:</h3>
+            <ul>
+                <li>✅ <strong>Checkbox</strong> untuk setiap faktur (hanya tampil di mode batch)</li>
+                <li>🟡 <strong>Highlight kuning</strong> untuk faktur yang dipilih</li>
+                <li>📊 <strong>Summary counter</strong> menampilkan total faktur dan jumlah</li>
+                <li>💰 <strong>Alokasi preview</strong> dengan warna status</li>
+            </ul>
+        </div>
+        
+        <h2>⚠️ Perhatian Penting</h2>
+        
+        <div class="warning">
+            <ul>
+                <li>Pastikan pilih mode yang tepat sebelum memilih faktur</li>
+                <li>Dalam mode batch, sistem akan mengoptimalkan alokasi otomatis</li>
+                <li>Faktur yang sudah LUNAS akan ditandai dan tidak bisa dipilih lagi</li>
+                <li>Minimum 2 faktur untuk menggunakan mode batch</li>
+            </ul>
+        </div>
+        
+        <h2>🚀 Test Sekarang!</h2>
+        
+        <div class="steps">
+            <p>Buka <strong>sales-mobile-final.html</strong> dan coba fitur batch payment:</p>
+            <div class="step">1. Login → Dashboard → Tagihan</div>
+            <div class="step">2. Switch ke mode "Bayar Multiple"</div>
+            <div class="step">3. Test dengan contoh Toko Sari Bumi atau Toko Samudra</div>
+            <div class="step">4. Lihat bagaimana sistem mengalokasikan pembayaran secara otomatis!</div>
+        </div>
+        
+        <div class="result">
+            <h3>🎉 Fitur Siap Digunakan!</h3>
+            <p>Batch payment akan mempercepat proses tagihan untuk salesman yang menangani customer dengan multiple faktur.</p>
+        </div>
+    </div>
+</body>
+</html>

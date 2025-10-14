@@ -1,0 +1,11 @@
+{
+    "include": [
+        "."
+    ],
+    "extraPaths": [
+        "./backend/app",
+        "./backend/app/services"
+    ],
+    "pythonVersion": "3.9",
+    "typeCheckingMode": "basic"
+}

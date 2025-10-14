@@ -1,0 +1,27 @@
+﻿GAJAH NUSA ERP - Test Report
+============================
+Test Date: 09/09/2025 07:13:09
+Environment: localhost
+Test Suite: mobile
+
+Summary:
+Passed: 2
+Failed: 2
+Warnings: 0
+Total: 4
+
+Detailed Results:
+[PASS] Mobile Web App: Status: 200
+[FAIL] App Logo: The remote server returned an error: (404) Not Found.
+[FAIL] App Favicon: The remote server returned an error: (404) Not Found.
+[PASS] Expo Dev Server: Running on port 19006
+Recommendations:
+Fix failed tests before production deployment
+
+
+
+Next Steps:
+1. Review failed tests and fix issues
+2. Re-run tests after fixes
+3. Deploy to production when all tests pass
+4. Set up monitoring and alerts

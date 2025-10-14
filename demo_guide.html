@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAJAH NUSA ERP - Demo Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .demo-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .demo-link {
+            display: block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+
+        .demo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .step-guide {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .step-guide h3 {
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            background: #27ae60;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .updates-highlight {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .updates-highlight h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .update-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .update-item .emoji {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 GAJAH NUSA ERP</h1>
+            <p>Demo Guide - AI Cerdas dan Canggih</p>
+        </div>
+
+        <div class="content">
+            <div class="updates-highlight">
+                <h3>🆕 Latest Updates Implemented</h3>
+                <div class="update-item">
+                    <span class="emoji">🏷️</span>
+                    <strong>Tagline Changed:</strong> "Anti-Fraud System" → "AI Cerdas dan Canggih"
+                </div>
+                <div class="update-item">
+                    <span class="emoji">📷</span>
+                    <strong>KTP Photo:</strong> Dual options - File Upload OR Camera Capture
+                </div>
+                <div class="update-item">
+                    <span class="emoji">🧠</span>
+                    <strong>Face Recognition:</strong> Upgraded to Machine Learning (not just detection)
+                </div>
+                <div class="update-item">
+                    <span class="emoji">🔒</span>
+                    <strong>Role-Based Deletion:</strong> Only Admin & Owner can delete Employee IDs
+                </div>
+            </div>
+
+            <div class="demo-links">
+                <a href="http://localhost:8080/register.html" class="demo-link" target="_blank">
+                    📝 Registration Form<br>
+                    <small>Test all new features</small>
+                </a>
+                <a href="http://localhost:8080/employee_management.html" class="demo-link" target="_blank">
+                    👥 Employee Management<br>
+                    <small>Role-based controls</small>
+                </a>
+                <a href="http://localhost:8080/web_admin_dashboard.html" class="demo-link" target="_blank">
+                    🔐 Admin Dashboard<br>
+                    <small>Updated tagline</small>
+                </a>
+                <a href="http://localhost:8002/docs" class="demo-link" target="_blank">
+                    📖 API Documentation<br>
+                    <small>FastAPI auto-docs</small>
+                </a>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📷📁</div>
+                    <div class="feature-title">KTP Photo - Dual Options</div>
+                    <div class="feature-desc">
+                        <strong>Option 1:</strong> Upload file from device<br>
+                        <strong>Option 2:</strong> Take photo with camera<br>
+                        • Live preview<br>
+                        • 5MB size validation<br>
+                        • Clear & retake options
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">AI Face Recognition</div>
+                    <div class="feature-desc">
+                        <strong>Machine Learning Features:</strong><br>
+                        • 128-dimensional face embedding<br>
+                        • Facial landmark detection<br>
+                        • 95%+ confidence scoring<br>
+                        • 3-second ML processing<br>
+                        • Unique face descriptor generation
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">Role-Based Security</div>
+                    <div class="feature-desc">
+                        <strong>Employee ID Deletion:</strong><br>
+                        • Only Admin & Owner allowed<br>
+                        • Access denied for other roles<br>
+                        • Audit trail with requester info<br>
+                        • Secure API endpoints
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-title">Smart Form Logic</div>
+                    <div class="feature-desc">
+                        <strong>Dynamic Validation:</strong><br>
+                        • Area phone for sales/supervisor/manager only<br>
+                        • Real-time Employee ID preview<br>
+                        • All fields required validation<br>
+                        • ML completion verification
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-guide">
+                <h3>🧪 Testing Guide</h3>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Open Registration Form</strong><br>
+                        Click the "Registration Form" link above to see all new features
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Test KTP Photo Options</strong><br>
+                        Try both "Upload File" and "Take Photo" buttons for KTP upload
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Test AI Face Recognition</strong><br>
+                        Click "Start AI Face Learning" → Allow camera → Capture → Watch ML processing
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Test Role-Based Features</strong><br>
+                        Select different roles to see area phone visibility and Employee ID preview
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <strong>Test Employee Management</strong><br>
+                        Open Employee Management → Select role → Test deletion permissions
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <strong>Complete Registration</strong><br>
+                        Fill all required fields → Submit → Get auto-generated Employee ID
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #d4edda; border-radius: 10px; padding: 25px; text-align: center; margin-top: 30px;">
+                <h3 style="color: #155724; margin-bottom: 15px;">✅ All Systems Ready!</h3>
+                <p style="color: #155724; font-size: 16px; line-height: 1.6;">
+                    <strong>HTTP Server:</strong> Running on port 8080<br>
+                    <strong>Registration API:</strong> Running on port 8002<br>
+                    <strong>Features:</strong> KTP dual capture, ML face recognition, role-based security<br>
+                    <strong>Status:</strong> Ready for testing and demonstration
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add click tracking for demo links
+        document.querySelectorAll('.demo-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                console.log('Opening:', this.textContent.trim());
+            });
+        });
+
+        // Add animation to feature cards
+        document.querySelectorAll('.feature-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    </script>
+</body>
+</html>

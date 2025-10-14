@@ -1,0 +1,25 @@
+﻿GAJAH NUSA ERP - Test Report
+============================
+Test Date: 09/09/2025 07:11:13
+Environment: localhost
+Test Suite: api
+
+Summary:
+Passed: 0
+Failed: 2
+Warnings: 0
+Total: 2
+
+Detailed Results:
+[FAIL] API Health Check: Unable to connect to the remote server
+[FAIL] User Login: Unable to connect to the remote server
+Recommendations:
+Fix failed tests before production deployment
+
+
+
+Next Steps:
+1. Review failed tests and fix issues
+2. Re-run tests after fixes
+3. Deploy to production when all tests pass
+4. Set up monitoring and alerts

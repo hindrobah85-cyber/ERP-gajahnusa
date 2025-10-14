@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAJAH NUSA - Employee Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .role-selector {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .role-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .role-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .employee-list {
+            padding: 20px;
+        }
+
+        .employee-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .employee-info {
+            flex: 1;
+        }
+
+        .employee-id {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .employee-name {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .employee-role {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .employee-status {
+            margin-top: 5px;
+        }
+
+        .status-active {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-terminated {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .delete-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .permission-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 GAJAH NUSA ERP</h1>
+            <p>Employee Management - AI Cerdas dan Canggih</p>
+        </div>
+
+        <div class="role-selector">
+            <label for="userRole">Your Role:</label>
+            <select id="userRole" class="role-select" onchange="updatePermissions()">
+                <option value="">Select your role</option>
+                <option value="owner">Owner</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="supervisor_toko">Supervisor Toko</option>
+                <option value="sales_toko">Sales Toko</option>
+                <option value="driver">Driver</option>
+                <option value="gudang">Gudang</option>
+            </select>
+        </div>
+
+        <div id="permissionWarning" class="permission-warning" style="display: none;">
+            ⚠️ Only <strong>Admin</strong> and <strong>Owner</strong> can delete employee IDs. Your current role does not have deletion permissions.
+        </div>
+
+        <div id="successMessage" class="success-message" style="display: none;"></div>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div class="stats" id="stats">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+
+        <div class="employee-list" id="employeeList">
+            <!-- Employee list will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        let currentUserRole = '';
+        let employees = [];
+
+        // Load employees when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmployees();
+        });
+
+        function updatePermissions() {
+            const roleSelect = document.getElementById('userRole');
+            currentUserRole = roleSelect.value;
+            const warningDiv = document.getElementById('permissionWarning');
+            
+            if (currentUserRole && !['admin', 'owner'].includes(currentUserRole)) {
+                warningDiv.style.display = 'block';
+            } else {
+                warningDiv.style.display = 'none';
+            }
+            
+            // Update delete buttons
+            updateDeleteButtons();
+        }
+
+        function updateDeleteButtons() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const canDelete = ['admin', 'owner'].includes(currentUserRole);
+            
+            deleteButtons.forEach(btn => {
+                btn.disabled = !canDelete;
+                if (!canDelete) {
+                    btn.textContent = '🔒 No Permission';
+                    btn.title = 'Only Admin and Owner can delete employees';
+                } else {
+                    btn.textContent = '🗑️ Delete';
+                    btn.title = 'Delete this employee';
+                }
+            });
+        }
+
+        async function loadEmployees() {
+            try {
+                const response = await fetch('http://localhost:8002/api/employees');
+                if (response.ok) {
+                    const data = await response.json();
+                    employees = data.employees || [];
+                    displayEmployees();
+                    displayStats();
+                } else {
+                    showError('Failed to load employees');
+                }
+            } catch (error) {
+                showError('Error connecting to server: ' + error.message);
+            }
+        }
+
+        function displayEmployees() {
+            const listDiv = document.getElementById('employeeList');
+            
+            if (employees.length === 0) {
+                listDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 40px;">No employees found</p>';
+                return;
+            }
+
+            listDiv.innerHTML = employees.map(emp => `
+                <div class="employee-card">
+                    <div class="employee-info">
+                        <div class="employee-id">${emp.employee_id}</div>
+                        <div class="employee-name">${emp.name}</div>
+                        <span class="employee-role">${emp.role}</span>
+                        <div class="employee-status">
+                            Status: <span class="status-${emp.status}">${emp.status.toUpperCase()}</span>
+                            ${emp.terminated_by ? `<br><small>Terminated by: ${emp.terminated_by}</small>` : ''}
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteEmployee('${emp.employee_id}')" ${emp.status === 'terminated' ? 'disabled' : ''}>
+                        ${emp.status === 'terminated' ? '✅ Terminated' : '🗑️ Delete'}
+                    </button>
+                </div>
+            `).join('');
+
+            updateDeleteButtons();
+        }
+
+        function displayStats() {
+            const activeEmployees = employees.filter(emp => emp.status === 'active').length;
+            const terminatedEmployees = employees.filter(emp => emp.status === 'terminated').length;
+            const totalEmployees = employees.length;
+
+            const roleCounts = employees.reduce((acc, emp) => {
+                if (emp.status === 'active') {
+                    acc[emp.role] = (acc[emp.role] || 0) + 1;
+                }
+                return acc;
+            }, {});
+
+            const statsDiv = document.getElementById('stats');
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${totalEmployees}</div>
+                    <div class="stat-label">Total Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${activeEmployees}</div>
+                    <div class="stat-label">Active Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${terminatedEmployees}</div>
+                    <div class="stat-label">Terminated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${Object.keys(roleCounts).length}</div>
+                    <div class="stat-label">Active Roles</div>
+                </div>
+            `;
+        }
+
+        async function deleteEmployee(employeeId) {
+            if (!currentUserRole) {
+                showError('Please select your role first');
+                return;
+            }
+
+            if (!['admin', 'owner'].includes(currentUserRole)) {
+                showError('Access Denied: Only Admin and Owner can delete employee IDs');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete employee ${employeeId}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8002/api/employees/${employeeId}/terminate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        requester_role: currentUserRole,
+                        reason: 'Deleted via management interface'
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showSuccess(result.message);
+                    loadEmployees(); // Reload the list
+                } else {
+                    const error = await response.json();
+                    showError(error.detail || 'Failed to delete employee');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "name": "GAJAH NUSA ERP Mobile",
+    "slug": "gajah-nusa-erp-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#27ae60"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gajahnusa.erp.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "App menggunakan kamera untuk mengambil foto nota, produk, dan verifikasi wajah",
+        "NSLocationWhenInUseUsageDescription": "App memerlukan lokasi untuk tracking sales visit dan optimasi rute",
+        "NSMicrophoneUsageDescription": "App menggunakan mikrofon untuk fitur komunikasi"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#27ae60"
+      },
+      "package": "com.gajahnusa.erp.mobile",
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "App memerlukan lokasi untuk tracking dan optimasi rute."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "App menggunakan kamera untuk foto nota dan verifikasi."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#27ae60"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id-here"
+      }
+    }
+  }
+}

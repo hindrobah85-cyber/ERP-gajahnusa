@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Order Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .button { padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 10px; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal-content { background: white; margin: 50px auto; padding: 20px; width: 90%; max-width: 600px; border-radius: 8px; }
+        .form-row { margin: 10px 0; }
+        .form-row input, .form-row select { padding: 8px; margin: 5px; }
+        .order-item { border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🏪 GAJAH NUSA ERP - Demo Order Management</h1>
+    
+    <button class="button" onclick="openOrderModal()">📦 Buka Order Management</button>
+    
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <h3>📦 Order Management - Demo</h3>
+            <button onclick="closeModal()" style="float: right;">❌</button>
+            
+            <div class="form-row">
+                <strong>📋 Order #<span id="orderNumber">ORD-2025-0001</span></strong><br>
+                📅 Tanggal: 09/09/2025<br>
+                👤 Customer: <select id="customerSelect">
+                    <option>Toko Maju Jaya</option>
+                    <option>Warung Berkah</option>
+                    <option>Minimarket Sari</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <strong>🛍️ Tambah Barang:</strong><br>
+                <select id="productSelect" onchange="selectProduct()">
+                    <option value="">-- Pilih Barang --</option>
+                    <option value="pipa_pvc" data-unit="btg" data-price="45000">Pipa PVC</option>
+                    <option value="tangki_air" data-unit="pcs" data-price="850000">Tangki Air</option>
+                    <option value="kran_air" data-unit="pcs" data-price="25000">Kran Air</option>
+                </select>
+                
+                <input type="number" id="quantity" placeholder="Qty" style="width: 60px;">
+                <input type="text" id="unit" placeholder="Satuan" readonly style="width: 80px; background: #f5f5f5;">
+                <input type="number" id="hargaJual" placeholder="Harga Jual" style="width: 120px;">
+                <button onclick="addToOrder()" style="background: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px;">➕ Tambah</button>
+            </div>
+            
+            <div class="form-row">
+                <strong>📋 Daftar Barang Order:</strong>
+                <div id="orderItemsList">
+                    <div style="color: #888; text-align: center; padding: 20px;">
+                        Belum ada barang yang ditambahkan
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <button onclick="reviewOrder()" id="reviewBtn" style="background: #2196F3; color: white; padding: 12px 25px; border: none; border-radius: 4px; display: none;">📊 Review Order</button>
+            </div>
+            
+            <div id="orderSummary" style="display: none; background: #e8f5e8; padding: 15px; border-radius: 4px; margin: 10px 0;">
+                <strong>💰 Resume Order:</strong>
+                <div id="summaryContent"></div>
+                <button onclick="fixOrder()" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin-top: 10px;">✅ Fix Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let orderItems = [];
+        let orderCounter = 1;
+
+        function openOrderModal() {
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function selectProduct() {
+            const select = document.getElementById('productSelect');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption.value) {
+                document.getElementById('unit').value = selectedOption.dataset.unit;
+                document.getElementById('hargaJual').value = selectedOption.dataset.price;
+            } else {
+                document.getElementById('unit').value = '';
+                document.getElementById('hargaJual').value = '';
+            }
+        }
+
+        function addToOrder() {
+            const productSelect = document.getElementById('productSelect');
+            const quantity = document.getElementById('quantity').value;
+            const unit = document.getElementById('unit').value;
+            const hargaJual = document.getElementById('hargaJual').value;
+            
+            if (!productSelect.value || !quantity || !hargaJual) {
+                alert('❌ Mohon lengkapi semua field!');
+                return;
+            }
+            
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const productName = selectedOption.text;
+            const total = parseInt(quantity) * parseInt(hargaJual);
+            
+            const orderItem = {
+                id: Date.now(),
+                product: productName,
+                quantity: parseInt(quantity),
+                unit: unit,
+                hargaJual: parseInt(hargaJual),
+                total: total
+            };
+            
+            orderItems.push(orderItem);
+            updateOrderDisplay();
+            clearProductForm();
+            
+            // Show review button and log for debugging
+            console.log('Order items:', orderItems.length);
+            document.getElementById('reviewBtn').style.display = 'block';
+            alert(`✅ Barang ditambahkan!\n\n${productName}\n${quantity} ${unit} × Rp ${hargaJual.toLocaleString()}\nTotal: Rp ${total.toLocaleString()}\n\nKlik "📊 Review Order" untuk melihat resume!`);
+        }
+
+        function updateOrderDisplay() {
+            const orderList = document.getElementById('orderItemsList');
+            
+            if (orderItems.length === 0) {
+                orderList.innerHTML = '<div style="color: #888; text-align: center; padding: 20px;">Belum ada barang yang ditambahkan</div>';
+                return;
+            }
+            
+            let html = '';
+            orderItems.forEach((item, index) => {
+                html += `
+                    <div class="order-item">
+                        <strong>${item.product}</strong><br>
+                        ${item.quantity} ${item.unit} × Rp ${item.hargaJual.toLocaleString()} = <strong>Rp ${item.total.toLocaleString()}</strong>
+                        <button onclick="removeOrderItem(${item.id})" style="float: right; background: #f44336; color: white; border: none; padding: 5px; border-radius: 3px;">🗑️</button>
+                    </div>
+                `;
+            });
+            
+            orderList.innerHTML = html;
+        }
+
+        function removeOrderItem(itemId) {
+            orderItems = orderItems.filter(item => item.id !== itemId);
+            updateOrderDisplay();
+            document.getElementById('reviewBtn').style.display = orderItems.length > 0 ? 'block' : 'none';
+        }
+
+        function clearProductForm() {
+            document.getElementById('productSelect').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('unit').value = '';
+            document.getElementById('hargaJual').value = '';
+        }
+
+        function reviewOrder() {
+            if (orderItems.length === 0) {
+                alert('❌ Belum ada barang dalam order!\n\nSilahkan tambah barang terlebih dahulu.');
+                return;
+            }
+            
+            const customer = document.getElementById('customerSelect').value;
+            const grandTotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+            
+            let summaryHtml = `
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 4px; background: white; margin: 10px 0;">
+                    <strong>📋 Detail Order:</strong><br>
+                    📅 Tanggal: 09/09/2025<br>
+                    👤 Customer: ${customer}<br>
+                    📦 Total Items: ${orderItems.length}<br><br>
+                    
+                    <strong>🛍️ Daftar Barang:</strong><br>
+            `;
+            
+            orderItems.forEach((item, index) => {
+                summaryHtml += `
+                    ${index + 1}. ${item.product}<br>
+                    &nbsp;&nbsp;&nbsp;${item.quantity} ${item.unit} × Rp ${item.hargaJual.toLocaleString()} = <strong>Rp ${item.total.toLocaleString()}</strong><br>
+                `;
+            });
+            
+            summaryHtml += `
+                    <hr style="margin: 15px 0;">
+                    <div style="font-size: 18px; font-weight: bold; color: #4CAF50;">
+                        💰 Jumlah Total: Rp ${grandTotal.toLocaleString()}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('summaryContent').innerHTML = summaryHtml;
+            document.getElementById('orderSummary').style.display = 'block';
+            document.getElementById('reviewBtn').style.display = 'none';
+            
+            // Alert to confirm review is showing
+            alert('✅ Resume Order Ditampilkan!\n\nScroll ke bawah untuk melihat detail lengkap dan tombol "Fix Order".');
+        }
+
+        function fixOrder() {
+            const customer = document.getElementById('customerSelect').value;
+            const orderNumber = document.getElementById('orderNumber').textContent;
+            const grandTotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+            
+            alert(`✅ Order Berhasil Dikirim ke Admin!\n\n📋 ${orderNumber}\n👤 Customer: ${customer}\n💰 Total: Rp ${grandTotal.toLocaleString()}\n📦 Items: ${orderItems.length}\n\n🔄 Status: Menunggu konfirmasi admin\n📱 Notifikasi akan dikirim setelah diproses`);
+            
+            // Reset order
+            orderItems = [];
+            updateOrderDisplay();
+            document.getElementById('orderSummary').style.display = 'none';
+            document.getElementById('reviewBtn').style.display = 'none';
+            clearProductForm();
+            
+            // Generate new order number
+            orderCounter++;
+            document.getElementById('orderNumber').textContent = `ORD-2025-${String(orderCounter).padStart(4, '0')}`;
+        }
+    </script>
+</body>
+</html>

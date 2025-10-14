@@ -1,0 +1,70 @@
+{
+  "name": "gajah-nusa-erp",
+  "version": "1.0.0",
+  "description": "GAJAH NUSA ERP System - Desktop, Mobile, and ML Integration",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:mobile\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:mobile": "cd mobile && npx expo start",
+    "dev:ml": "cd ml-engine && python -m uvicorn main:app --reload --port 8001",
+    "build": "npm run build:frontend && npm run build:mobile",
+    "build:frontend": "cd frontend && npm run build",
+    "build:mobile": "cd mobile && npx expo build",
+    "install:all": "npm install && cd frontend && npm install && cd ../mobile && npm install",
+    "setup": "npm run install:all && npm run setup:backend && npm run setup:db",
+    "setup:backend": "cd backend && pip install -r requirements.txt",
+    "setup:db": "cd backend && python -m alembic upgrade head",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && python -m pytest",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && python -m black . && python -m isort .",
+    "clean": "npm run clean:frontend && npm run clean:mobile && npm run clean:backend",
+    "clean:frontend": "cd frontend && rm -rf node_modules dist",
+    "clean:mobile": "cd mobile && rm -rf node_modules .expo",
+    "clean:backend": "cd backend && find . -type d -name __pycache__ -exec rm -rf {} + || true"
+  },
+  "keywords": [
+    "erp",
+    "anti-fraud",
+    "machine-learning",
+    "react",
+    "react-native",
+    "fastapi",
+    "postgresql"
+  ],
+  "author": "GAJAH NUSA Team",
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/netinfo": "^11.4.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@types/react-native": "^0.72.8",
+    "axios": "^1.11.0",
+    "expo-barcode-scanner": "^13.0.1",
+    "expo-camera": "^16.1.11",
+    "expo-face-detector": "^13.0.2",
+    "expo-image-picker": "^16.1.4",
+    "expo-linear-gradient": "^14.1.5",
+    "expo-location": "^18.1.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-native": "^0.81.1",
+    "react-native-vector-icons": "^10.3.0",
+    "react-router-dom": "^7.8.2"
+  }
+}

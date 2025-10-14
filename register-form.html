@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - GAJAH NUSA ERP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .form-section {
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .register-container {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h1>🐘 GAJAH NUSA ERP</h1>
+            <p>Sistem Manajemen Perusahaan Terpadu</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="registerForm">
+            <!-- Personal Information -->
+            <div class="form-section">
+                <h3>📋 Informasi Personal</h3>
+                
+                <div class="form-group">
+                    <label for="fullName">Nama Lengkap <span class="required">*</span></label>
+                    <input type="text" id="fullName" name="fullName" required placeholder="Masukkan nama lengkap">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">No. Telepon <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" required placeholder="08xxxxxxxxxx">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nik">NIK <span class="required">*</span></label>
+                    <input type="text" id="nik" name="nik" required placeholder="Nomor Induk Kependudukan" maxlength="16">
+                    <div class="help-text">16 digit nomor induk kependudukan</div>
+                </div>
+            </div>
+
+            <!-- Employment Information -->
+            <div class="form-section">
+                <h3>💼 Informasi Pekerjaan</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="employeeId">Employee ID <span class="required">*</span></label>
+                        <input type="text" id="employeeId" name="employeeId" required placeholder="EMP001" pattern="EMP[0-9]{3}">
+                        <div class="help-text">Format: EMP + 3 digit angka (contoh: EMP001)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Departemen <span class="required">*</span></label>
+                        <select id="department" name="department" required>
+                            <option value="">-- Pilih Departemen --</option>
+                            <option value="sales">Sales & Marketing</option>
+                            <option value="accounting">Accounting & Finance</option>
+                            <option value="warehouse">Warehouse & Logistics</option>
+                            <option value="hr">Human Resources</option>
+                            <option value="it">IT Support</option>
+                            <option value="management">Management</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="position">Posisi <span class="required">*</span></label>
+                        <select id="position" name="position" required>
+                            <option value="">-- Pilih Posisi --</option>
+                            <option value="salesman">Salesman Toko</option>
+                            <option value="supervisor">Supervisor</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                            <option value="staff">Staff</option>
+                            <option value="director">Director</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workArea">Area Kerja</label>
+                        <input type="text" id="workArea" name="workArea" placeholder="Jakarta Pusat, Bekasi, dll">
+                        <div class="help-text">Area kerja untuk posisi sales (opsional)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Security -->
+            <div class="form-section">
+                <h3>🔐 Keamanan Akun</h3>
+                
+                <div class="form-group">
+                    <label for="username">Username <span class="required">*</span></label>
+                    <input type="text" id="username" name="username" required placeholder="Username untuk login" minlength="4">
+                    <div class="help-text">Minimal 4 karakter, akan digunakan untuk login</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <input type="password" id="password" name="password" required placeholder="Minimal 6 karakter" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Konfirmasi Password <span class="required">*</span></label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Ulangi password">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="register-btn">
+                🚀 Daftar Sekarang
+            </button>
+        </form>
+
+        <div class="login-link">
+            Sudah punya akun? <a href="sales-mobile-final.html">Login di sini</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validation
+            if (!validateForm(data)) {
+                return;
+            }
+            
+            // Simulate registration process
+            showAlert('⏳ Sedang memproses registrasi...', 'info');
+            
+            setTimeout(() => {
+                // Simulate successful registration
+                showAlert('✅ Registrasi berhasil! Akun Anda telah dibuat dan menunggu approval admin.', 'success');
+                
+                // Show registration details
+                setTimeout(() => {
+                    alert(`🎉 REGISTRASI BERHASIL!\n\n📋 Detail Akun:\n• Nama: ${data.fullName}\n• Employee ID: ${data.employeeId}\n• Departemen: ${getDepartmentName(data.department)}\n• Posisi: ${getPositionName(data.position)}\n• Email: ${data.email}\n• Area Kerja: ${data.workArea || 'Tidak ditentukan'}\n\n⏳ Status: Menunggu approval admin\n📧 Email konfirmasi akan dikirim dalam 24 jam\n\n📱 Anda dapat login setelah akun diaktivasi oleh admin.\n\n🔗 Silahkan bookmark halaman login untuk akses cepat.`);
+                    
+                    // Reset form
+                    document.getElementById('registerForm').reset();
+                    hideAlert();
+                }, 2000);
+                
+            }, 1500);
+        });
+
+        function validateForm(data) {
+            // Check required fields
+            const requiredFields = ['fullName', 'email', 'phone', 'nik', 'employeeId', 'department', 'position', 'username', 'password', 'confirmPassword'];
+            
+            for (let field of requiredFields) {
+                if (!data[field] || data[field].trim() === '') {
+                    showAlert(`❌ Field ${getFieldLabel(field)} harus diisi!`, 'error');
+                    document.getElementById(field).focus();
+                    return false;
+                }
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                showAlert('❌ Format email tidak valid!', 'error');
+                document.getElementById('email').focus();
+                return false;
+            }
+            
+            // Validate phone number
+            const phoneRegex = /^08[0-9]{8,11}$/;
+            if (!phoneRegex.test(data.phone)) {
+                showAlert('❌ Nomor telepon harus diawali 08 dan 10-13 digit!', 'error');
+                document.getElementById('phone').focus();
+                return false;
+            }
+            
+            // Validate NIK
+            if (data.nik.length !== 16 || !/^[0-9]+$/.test(data.nik)) {
+                showAlert('❌ NIK harus 16 digit angka!', 'error');
+                document.getElementById('nik').focus();
+                return false;
+            }
+            
+            // Validate Employee ID format
+            const empIdRegex = /^EMP[0-9]{3}$/;
+            if (!empIdRegex.test(data.employeeId)) {
+                showAlert('❌ Employee ID harus format EMP001, EMP002, dst!', 'error');
+                document.getElementById('employeeId').focus();
+                return false;
+            }
+            
+            // Validate username
+            if (data.username.length < 4) {
+                showAlert('❌ Username minimal 4 karakter!', 'error');
+                document.getElementById('username').focus();
+                return false;
+            }
+            
+            // Validate password
+            if (data.password.length < 6) {
+                showAlert('❌ Password minimal 6 karakter!', 'error');
+                document.getElementById('password').focus();
+                return false;
+            }
+            
+            // Check password confirmation
+            if (data.password !== data.confirmPassword) {
+                showAlert('❌ Konfirmasi password tidak cocok!', 'error');
+                document.getElementById('confirmPassword').focus();
+                return false;
+            }
+            
+            return true;
+        }
+
+        function getFieldLabel(field) {
+            const labels = {
+                'fullName': 'Nama Lengkap',
+                'email': 'Email',
+                'phone': 'No. Telepon',
+                'nik': 'NIK',
+                'employeeId': 'Employee ID',
+                'department': 'Departemen',
+                'position': 'Posisi',
+                'username': 'Username',
+                'password': 'Password',
+                'confirmPassword': 'Konfirmasi Password'
+            };
+            return labels[field] || field;
+        }
+
+        function getDepartmentName(value) {
+            const departments = {
+                'sales': 'Sales & Marketing',
+                'accounting': 'Accounting & Finance',
+                'warehouse': 'Warehouse & Logistics',
+                'hr': 'Human Resources',
+                'it': 'IT Support',
+                'management': 'Management'
+            };
+            return departments[value] || value;
+        }
+
+        function getPositionName(value) {
+            const positions = {
+                'salesman': 'Salesman Toko',
+                'supervisor': 'Supervisor',
+                'manager': 'Manager',
+                'admin': 'Admin',
+                'staff': 'Staff',
+                'director': 'Director'
+            };
+            return positions[value] || value;
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = 'alert alert-' + type;
+            alert.style.display = 'block';
+            alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Auto hide after 5 seconds for non-success messages
+            if (type !== 'success') {
+                setTimeout(hideAlert, 5000);
+            }
+        }
+
+        function hideAlert() {
+            document.getElementById('alert').style.display = 'none';
+        }
+
+        // Auto-generate Employee ID suggestion
+        document.getElementById('fullName').addEventListener('blur', function() {
+            const fullName = this.value.trim();
+            const empIdField = document.getElementById('employeeId');
+            
+            if (fullName && !empIdField.value) {
+                // Generate suggestion based on name
+                const randomNum = Math.floor(Math.random() * 900) + 100;
+                empIdField.placeholder = `Contoh: EMP${randomNum}`;
+            }
+        });
+
+        // Real-time password validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = '#e74c3c';
+            } else if (confirmPassword && password === confirmPassword) {
+                this.style.borderColor = '#27ae60';
+            } else {
+                this.style.borderColor = '#e1e1e1';
+            }
+        });
+
+        // NIK input validation
+        document.getElementById('nik').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 16) {
+                this.value = this.value.slice(0, 16);
+            }
+        });
+
+        // Phone input validation
+        document.getElementById('phone').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (!this.value.startsWith('08') && this.value.length > 0) {
+                this.value = '08' + this.value.replace(/^0*/, '');
+            }
+        });
+
+        // Employee ID input validation
+        document.getElementById('employeeId').addEventListener('input', function() {
+            let value = this.value.toUpperCase();
+            if (!value.startsWith('EMP') && value.length > 0) {
+                value = 'EMP' + value.replace(/[^0-9]/g, '');
+            }
+            this.value = value;
+        });
+
+        console.log('🐘 GAJAH NUSA ERP - Registration Form Ready!');
+        console.log('📝 Form validation active');
+        console.log('🔐 Security features enabled');
+        console.log('📱 Responsive design loaded');
+        console.log('✨ Real-time validation enabled');
+    </script>
+</body>
+</html>
