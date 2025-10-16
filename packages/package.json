@@ -1,0 +1,48 @@
+{
+  "name": "erp-system-monorepo",
+  "version": "1.0.0",
+  "description": "ERP System with 7-Team Microservices Architecture",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "packages/team*"
+  ],
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "lint": "lerna run lint",
+    "start:all": "concurrently \"npm run start:team1\" \"npm run start:team2\" \"npm run start:team3\" \"npm run start:team4\" \"npm run start:team5\" \"npm run start:team6\" \"npm run start:team7\" \"npm run start:ml\"",
+    "start:team1": "cd packages/team1-sales-mobile && npm start",
+    "start:team2": "cd packages/team2-logistics && npm start",
+    "start:team3": "cd packages/team3-finance && npm start",
+    "start:team4": "cd packages/team4-online-sales && npm start",
+    "start:team5": "cd packages/team5-offline-store && npm start",
+    "start:team6": "cd packages/team6-crm && npm start", 
+    "start:team7": "cd packages/team7-hrd && npm start",
+    "start:ml": "cd packages/ml-hub && python -m uvicorn main:app --port 9000",
+    "docker:up": "docker-compose -f infrastructure/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f infrastructure/docker-compose.yml down",
+    "setup:dev": "./scripts/setup-dev-environment.sh",
+    "db:migrate:all": "lerna run db:migrate",
+    "test:integration": "jest --config=jest.integration.config.js",
+    "test:e2e": "cypress run"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "concurrently": "^7.6.0",
+    "husky": "^8.0.0",
+    "lerna": "^6.0.0",
+    "jest": "^29.0.0",
+    "cypress": "^12.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.0"
+  },
+  "author": "ERP Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hindro150/absensi_performa.git"
+  }
+}

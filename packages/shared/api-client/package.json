@@ -1,0 +1,21 @@
+{
+  "name": "@erp/shared-api-client",
+  "version": "1.0.0",
+  "description": "Shared API client for ERP system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@erp/shared-types": "^1.0.0",
+    "@erp/shared-auth": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0",
+    "jest": "^29.0.0"
+  }
+}

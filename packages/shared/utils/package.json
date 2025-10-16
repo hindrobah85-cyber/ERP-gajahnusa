@@ -1,0 +1,24 @@
+{
+  "name": "@erp/shared-utils",
+  "version": "1.0.0",
+  "description": "Shared utilities for ERP system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@erp/shared-types": "^1.0.0",
+    "crypto": "^1.0.1",
+    "date-fns": "^2.29.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0",
+    "@types/lodash": "^4.14.0",
+    "jest": "^29.0.0"
+  }
+}

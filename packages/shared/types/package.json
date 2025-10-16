@@ -1,0 +1,18 @@
+{
+  "name": "@erp/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for ERP system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0",
+    "jest": "^29.0.0"
+  }
+}

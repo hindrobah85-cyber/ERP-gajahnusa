@@ -1,0 +1,21 @@
+{
+  "name": "@erp/shared-ml-common",
+  "version": "1.0.0",
+  "description": "Shared ML utilities for ERP system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@erp/shared-types": "^1.0.0",
+    "@erp/shared-api-client": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0",
+    "jest": "^29.0.0"
+  }
+}
