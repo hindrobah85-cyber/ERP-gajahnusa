@@ -81,7 +81,7 @@ def forecast_sales(historical_data: List[dict], periods: int = 6) -> List[Foreca
     
     for i in range(periods):
         future_index = last_index + i
-        predicted_revenue = model.predict([[future_index]])[0]
+        predicted_revenue = float(model.predict(np.array([[future_index]]))[0])
         
         # Add confidence interval (±10%)
         confidence = 0.90
