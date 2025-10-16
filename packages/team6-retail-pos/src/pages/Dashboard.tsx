@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-2">
             <CurrencyDollarIcon className="w-8 h-8 opacity-80" />
-            <TrendingUpIcon className="w-6 h-6" />
+            <ArrowTrendingUpIcon className="w-6 h-6" />
           </div>
           <div className="text-3xl font-bold mb-1">
             Rp {(stats.todaySales / 1000000).toFixed(1)}M
@@ -194,7 +194,7 @@ const Dashboard: React.FC = () => {
                 Rp {(stats.monthSales / 1000000000).toFixed(2)}B
               </div>
               <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
-                <TrendingUpIcon className="w-4 h-4" />
+                <ArrowTrendingUpIcon className="w-4 h-4" />
                 <span>+{stats.monthGrowth}% vs last month</span>
               </div>
             </div>
