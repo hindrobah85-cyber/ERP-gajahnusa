@@ -9,8 +9,8 @@ import {
   getLowStockItems,
   getInventoryMovements
 } from '@/controllers/inventoryController';
-import { authenticateToken } from '@/middleware/authMiddleware';
-import { validateInventoryItem, validateStockUpdate } from '@/middleware/validationMiddleware';
+import { authenticateToken } from '../middleware/authMiddleware';
+import { validateInventoryItem, validateStockUpdate } from '../middleware/validationMiddleware';
 
 const router = Router();
 

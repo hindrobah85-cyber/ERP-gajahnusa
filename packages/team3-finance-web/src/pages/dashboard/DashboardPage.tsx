@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   Grid,
   Paper,
@@ -251,7 +251,7 @@ const DashboardPage: React.FC = () => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {mockExpenseData.map((entry, index) => (
+                  {mockExpenseData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -268,7 +268,7 @@ const DashboardPage: React.FC = () => {
               Monthly Revenue vs Expenses
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mockRevenueData.map((item, index) => ({
+              <BarChart data={mockRevenueData.map((item) => ({
                 ...item,
                 expenses: mockExpenseData.reduce((acc, exp) => acc + exp.value, 0) / 6,
                 revenue: item.value

@@ -1,9 +1,8 @@
 import crypto from 'crypto';
 import { format, parseISO, isValid } from 'date-fns';
-import { cloneDeep, isEmpty, isEqual } from 'lodash';
 
 // ID Generation Utilities
-export class IDGenerator {
+class IDGeneratorClass {
   static generateUUID(): string {
     return crypto.randomUUID();
   }
@@ -32,7 +31,7 @@ export class IDGenerator {
 }
 
 // Date & Time Utilities
-export class DateUtils {
+class DateUtilsClass {
   static formatDate(date: Date | string, formatStr: string = 'yyyy-MM-dd'): string {
     const dateObj = typeof date === 'string' ? parseISO(date) : date;
     return isValid(dateObj) ? format(dateObj, formatStr) : '';
@@ -49,222 +48,300 @@ export class DateUtils {
     }).format(amount);
   }
 
-  static getCurrentTimestamp(): string {
-    return new Date().toISOString();
+  static addDays(date: Date | string, days: number): Date {
+    const dateObj = typeof date === 'string' ? parseISO(date) : new Date(date);
+    dateObj.setDate(dateObj.getDate() + days);
+    return dateObj;
   }
 
-  static addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  static daysBetween(date1: Date, date2: Date): number {
-    const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  static getDaysBetween(startDate: Date | string, endDate: Date | string): number {
+    const start = typeof startDate === 'string' ? parseISO(startDate) : startDate;
+    const end = typeof endDate === 'string' ? parseISO(endDate) : endDate;
+    const diffTime = Math.abs(end.getTime() - start.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  static isBusinessDay(date: Date | string): boolean {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    const dayOfWeek = dateObj.getDay();
+    return dayOfWeek !== 0 && dayOfWeek !== 6;
+  }
+
+  static getNextBusinessDay(date: Date | string): Date {
+    let nextDay = this.addDays(date, 1);
+    while (!this.isBusinessDay(nextDay)) {
+      nextDay = this.addDays(nextDay, 1);
+    }
+    return nextDay;
   }
 }
 
 // Validation Utilities
-export class ValidationUtils {
-  static isEmail(email: string): boolean {
+class ValidationUtilsClass {
+  static validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
-  static isPhoneNumber(phone: string): boolean {
-    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+  static validatePhoneNumber(phone: string): boolean {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
   }
 
-  static isValidSKU(sku: string): boolean {
-    const skuRegex = /^[A-Z]{3}-[0-9]{6}$/;
-    return skuRegex.test(sku);
-  }
-
-  static validateRequired(value: any, fieldName: string): string | null {
-    if (value === null || value === undefined || value === '') {
-      return `${fieldName} is required`;
+  static validatePassword(password: string): {
+    isValid: boolean;
+    errors: string[];
+  } {
+    const errors: string[] = [];
+    
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
     }
-    return null;
-  }
-
-  static validateMinLength(value: string, minLength: number, fieldName: string): string | null {
-    if (value.length < minLength) {
-      return `${fieldName} must be at least ${minLength} characters`;
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
     }
-    return null;
-  }
-
-  static validateMaxLength(value: string, maxLength: number, fieldName: string): string | null {
-    if (value.length > maxLength) {
-      return `${fieldName} must not exceed ${maxLength} characters`;
+    
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
     }
-    return null;
-  }
-
-  static validatePositiveNumber(value: number, fieldName: string): string | null {
-    if (value <= 0) {
-      return `${fieldName} must be a positive number`;
+    
+    if (!/[0-9]/.test(password)) {
+      errors.push('Password must contain at least one number');
     }
-    return null;
-  }
-}
-
-// Data Transformation Utilities
-export class DataUtils {
-  static deepClone<T>(obj: T): T {
-    return cloneDeep(obj);
-  }
-
-  static isEmpty(value: any): boolean {
-    return isEmpty(value);
-  }
-
-  static isEqual(obj1: any, obj2: any): boolean {
-    return isEqual(obj1, obj2);
-  }
-
-  static removeEmptyFields(obj: Record<string, any>): Record<string, any> {
-    const result: Record<string, any> = {};
-    for (const [key, value] of Object.entries(obj)) {
-      if (value !== null && value !== undefined && value !== '') {
-        result[key] = value;
-      }
+    
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      errors.push('Password must contain at least one special character');
     }
-    return result;
-  }
 
-  static groupBy<T>(array: T[], keyGetter: (item: T) => string): Record<string, T[]> {
-    const result: Record<string, T[]> = {};
-    array.forEach(item => {
-      const key = keyGetter(item);
-      if (!result[key]) {
-        result[key] = [];
-      }
-      result[key].push(item);
-    });
-    return result;
-  }
-
-  static paginate<T>(array: T[], page: number, limit: number): { data: T[], totalPages: number, currentPage: number } {
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
     return {
-      data: array.slice(startIndex, endIndex),
-      totalPages: Math.ceil(array.length / limit),
-      currentPage: page
+      isValid: errors.length === 0,
+      errors
     };
   }
-}
 
-// Encryption & Security Utilities
-export class SecurityUtils {
-  static hashPassword(password: string): string {
-    const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-    return `${salt}:${hash}`;
-  }
-
-  static verifyPassword(password: string, hashedPassword: string): boolean {
-    const [salt, hash] = hashedPassword.split(':');
-    const verifyHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-    return hash === verifyHash;
-  }
-
-  static generateApiKey(): string {
-    return crypto.randomBytes(32).toString('hex');
-  }
-
-  static generateJWTSecret(): string {
-    return crypto.randomBytes(64).toString('hex');
+  static validateIdCard(idCard: string): boolean {
+    const idRegex = /^[0-9]{16}$/;
+    return idRegex.test(idCard);
   }
 
   static sanitizeInput(input: string): string {
     return input
-      .replace(/[<>]/g, '') // Remove potential HTML tags
-      .trim()
-      .substring(0, 1000); // Limit length
+      .replace(/[<>]/g, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+=/gi, '')
+      .trim();
+  }
+}
+
+// Data Processing Utilities
+class DataUtilsClass {
+  static deepClone<T>(obj: T): T {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  static isEmpty(value: any): boolean {
+    return value == null || value === '' || 
+           (Array.isArray(value) && value.length === 0) || 
+           (typeof value === 'object' && Object.keys(value).length === 0);
+  }
+
+  static isEqual(obj1: any, obj2: any): boolean {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  static groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
+    return array.reduce((groups, item) => {
+      const group = String(item[key]);
+      groups[group] = groups[group] || [];
+      groups[group].push(item);
+      return groups;
+    }, {} as Record<string, T[]>);
+  }
+
+  static sortBy<T>(array: T[], key: keyof T, direction: 'asc' | 'desc' = 'asc'): T[] {
+    return [...array].sort((a, b) => {
+      const aVal = a[key];
+      const bVal = b[key];
+      
+      if (direction === 'asc') {
+        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      } else {
+        return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+      }
+    });
+  }
+
+  static unique<T>(array: T[]): T[] {
+    return [...new Set(array)];
+  }
+
+  static chunk<T>(array: T[], size: number): T[][] {
+    const chunks: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  }
+
+  static flatten<T>(arrays: T[][]): T[] {
+    return arrays.reduce((acc, val) => acc.concat(val), []);
+  }
+
+  static paginate<T>(array: T[], page: number, limit: number): {
+    data: T[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  } {
+    const total = array.length;
+    const pages = Math.ceil(total / limit);
+    const offset = (page - 1) * limit;
+    const data = array.slice(offset, offset + limit);
+    
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages
+      }
+    };
+  }
+}
+
+// Security Utilities
+class SecurityUtilsClass {
+  static hashPassword(password: string): string {
+    return crypto.createHash('sha256').update(password).digest('hex');
+  }
+
+  static generateToken(length: number = 32): string {
+    return crypto.randomBytes(length).toString('hex');
+  }
+
+  static generateApiKey(): string {
+    return `erp_${crypto.randomBytes(16).toString('hex')}`;
   }
 }
 
 // Business Logic Utilities
-export class BusinessUtils {
-  static calculateTax(amount: number, taxRate: number = 0.11): number {
-    return Math.round(amount * taxRate * 100) / 100;
+class BusinessUtilsClass {
+  static calculateTax(amount: number, taxRate: number): number {
+    return amount * (taxRate / 100);
   }
 
-  static calculateDiscount(amount: number, discountPercentage: number): number {
-    return Math.round(amount * (discountPercentage / 100) * 100) / 100;
+  static calculateDiscount(price: number, discountPercent: number): number {
+    return price * (discountPercent / 100);
   }
 
-  static calculateTotal(subtotal: number, tax?: number, discount?: number): number {
-    const finalTax = tax || 0;
-    const finalDiscount = discount || 0;
-    return Math.round((subtotal + finalTax - finalDiscount) * 100) / 100;
+  static calculateTotal(subtotal: number, taxRate: number = 0, discountPercent: number = 0): number {
+    const discount = this.calculateDiscount(subtotal, discountPercent);
+    const afterDiscount = subtotal - discount;
+    const tax = this.calculateTax(afterDiscount, taxRate);
+    return afterDiscount + tax;
   }
 
-  static generateInvoiceNumber(): string {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const sequence = Date.now().toString().slice(-6);
-    return `INV-${year}${month}-${sequence}`;
+  static formatCurrency(amount: number, currency: string = 'IDR', locale: string = 'id-ID'): string {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
   }
 
-  static calculateInventoryValue(quantity: number, unitCost: number): number {
-    return Math.round(quantity * unitCost * 100) / 100;
+  static generateInvoiceNumber(prefix: string = 'INV'): string {
+    const year = new Date().getFullYear();
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+    const day = new Date().getDate().toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `${prefix}-${year}${month}${day}-${random}`;
   }
 
-  static determineStockLevel(current: number, min: number, max: number): 'low' | 'normal' | 'high' | 'overstock' {
-    if (current <= min) return 'low';
-    if (current > max) return 'overstock';
-    if (current > max * 0.8) return 'high';
-    return 'normal';
+  static calculateAge(birthDate: Date | string): number {
+    const birth = typeof birthDate === 'string' ? new Date(birthDate) : birthDate;
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age;
   }
 }
 
 // Error Handling Utilities
-export class ErrorUtils {
-  static createApiError(code: string, message: string, details?: Record<string, any>) {
-    return {
-      code,
-      message,
-      details,
-      timestamp: new Date().toISOString()
-    };
+class ErrorUtilsClass {
+  static createError(message: string, code?: string, statusCode?: number): Error {
+    const error = new Error(message) as any;
+    if (code) error.code = code;
+    if (statusCode) error.statusCode = statusCode;
+    return error;
   }
 
-  static formatValidationErrors(errors: string[]): string {
-    return errors.join('; ');
+  static handleAsyncError<T>(promise: Promise<T>): Promise<[T | null, Error | null]> {
+    return promise
+      .then<[T, null]>((data: T) => [data, null])
+      .catch<[null, Error]>((error: Error) => [null, error]);
   }
 
-  static isNetworkError(error: any): boolean {
-    return error?.code === 'NETWORK_ERROR' || error?.message?.includes('network');
+  static logError(error: Error, context?: string): void {
+    console.error(`[${new Date().toISOString()}] ${context || 'Error'}:`, error);
   }
 }
 
-// Performance & Monitoring Utilities
-export class PerformanceUtils {
-  static measureExecutionTime<T>(fn: () => T, label?: string): { result: T, duration: number } {
-    const start = performance.now();
-    const result = fn();
-    const duration = performance.now() - start;
+// Performance Utilities
+class PerformanceUtilsClass {
+  static debounce<T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+  ): (...args: Parameters<T>) => void {
+    let timeout: ReturnType<typeof setTimeout> | null = null;
     
-    if (label) {
-      console.log(`${label} executed in ${duration.toFixed(2)}ms`);
-    }
-    
-    return { result, duration };
+    return (...args: Parameters<T>) => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      
+      timeout = setTimeout(() => {
+        func(...args);
+      }, wait);
+    };
   }
 
-  static async measureAsyncExecutionTime<T>(fn: () => Promise<T>, label?: string): Promise<{ result: T, duration: number }> {
+  static throttle<T extends (...args: any[]) => any>(
+    func: T,
+    limit: number
+  ): (...args: Parameters<T>) => void {
+    let inThrottle: boolean = false;
+    
+    return (...args: Parameters<T>) => {
+      if (!inThrottle) {
+        func(...args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  }
+
+  static measurePerformance<T>(
+    func: () => T,
+    label?: string
+  ): { result: T; duration: number } {
     const start = performance.now();
-    const result = await fn();
-    const duration = performance.now() - start;
+    const result = func();
+    const end = performance.now();
+    const duration = end - start;
     
     if (label) {
-      console.log(`${label} executed in ${duration.toFixed(2)}ms`);
+      console.log(`${label} took ${duration.toFixed(2)}ms`);
     }
     
     return { result, duration };
@@ -272,7 +349,17 @@ export class PerformanceUtils {
 }
 
 // Export all utilities
-export {
+export const IDGenerator = IDGeneratorClass;
+export const DateUtils = DateUtilsClass;
+export const ValidationUtils = ValidationUtilsClass;
+export const DataUtils = DataUtilsClass;
+export const SecurityUtils = SecurityUtilsClass;
+export const BusinessUtils = BusinessUtilsClass;
+export const ErrorUtils = ErrorUtilsClass;
+export const PerformanceUtils = PerformanceUtilsClass;
+
+// Default export
+export default {
   IDGenerator,
   DateUtils,
   ValidationUtils,

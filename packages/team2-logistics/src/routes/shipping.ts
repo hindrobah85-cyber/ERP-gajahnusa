@@ -7,7 +7,7 @@ import {
   cancelShipment,
   getShipmentsByOrder,
   generateShippingLabel
-} from '@/controllers/shippingController';
+} from '../controllers/shippingController';
 import { authenticateToken, authorize } from '@/middleware/authMiddleware';
 import { validateShipment } from '@/middleware/validationMiddleware';
 

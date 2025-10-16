@@ -1,32 +1,42 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { JWTManager, AuthToken } from '@erp/shared-auth';
-import { createServiceClient, createDefaultServiceRegistry } from '@erp/shared-api-client';
+
+// Temporary interfaces for demo
+interface AuthToken {
+  token: string;
+  expiresAt: number;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 export class AuthService {
-  private static jwtManager = new JWTManager();
-  private static serviceRegistry = createDefaultServiceRegistry();
-  private static apiClient = createServiceClient('team1', this.serviceRegistry);
+  private static TOKEN_KEY = 'auth_token';
 
   static async login(email: string, password: string): Promise<boolean> {
     try {
-      // In real implementation, this would call the authentication API
-      // For now, using mock authentication
-      const mockUser = {
-        id: 'user-123',
-        email,
-        role: 'sales',
-        team: 'team1'
+      // Mock authentication - in real app, call API
+      const mockUser: User = {
+        id: '1',
+        name: 'Sales Person',
+        email: email,
+        role: 'sales'
       };
 
-      const token = this.jwtManager.generateToken(mockUser);
-      
-      // Store token locally
-      await AsyncStorage.setItem('auth_token', token);
+      // Generate mock token
+      const token = `mock_token_${Date.now()}`;
+      const authToken: AuthToken = {
+        token,
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+      };
+
+      // Store token
+      await AsyncStorage.setItem(this.TOKEN_KEY, JSON.stringify(authToken));
       await AsyncStorage.setItem('user_data', JSON.stringify(mockUser));
-      
-      // Set token for API calls
-      this.apiClient.setAuthToken?.(token);
-      
+
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -36,11 +46,8 @@ export class AuthService {
 
   static async logout(): Promise<void> {
     try {
-      await AsyncStorage.removeItem('auth_token');
+      await AsyncStorage.removeItem(this.TOKEN_KEY);
       await AsyncStorage.removeItem('user_data');
-      
-      // Remove token from API client
-      this.apiClient.removeAuthToken?.();
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -48,18 +55,19 @@ export class AuthService {
 
   static async checkAuthStatus(): Promise<boolean> {
     try {
-      const token = await AsyncStorage.getItem('auth_token');
-      if (!token) return false;
+      const tokenData = await AsyncStorage.getItem(this.TOKEN_KEY);
+      if (!tokenData) {
+        return false;
+      }
 
-      // Verify token is still valid
-      const authData = this.jwtManager.verifyToken(token);
-      if (!authData) {
+      const authToken: AuthToken = JSON.parse(tokenData);
+      
+      // Check if token is expired
+      if (Date.now() > authToken.expiresAt) {
         await this.logout();
         return false;
       }
 
-      // Set token for API calls
-      this.apiClient.setAuthToken?.(token);
       return true;
     } catch (error) {
       console.error('Auth check error:', error);
@@ -67,30 +75,40 @@ export class AuthService {
     }
   }
 
-  static async getCurrentUser(): Promise<AuthToken | null> {
+  static async getCurrentUser(): Promise<User | null> {
     try {
-      const token = await AsyncStorage.getItem('auth_token');
-      if (!token) return null;
+      const isAuthenticated = await this.checkAuthStatus();
+      if (!isAuthenticated) {
+        return null;
+      }
 
-      return this.jwtManager.verifyToken(token);
+      const userData = await AsyncStorage.getItem('user_data');
+      return userData ? JSON.parse(userData) : null;
     } catch (error) {
       console.error('Get user error:', error);
       return null;
     }
   }
 
-  static async refreshToken(): Promise<boolean> {
+  static async getToken(): Promise<string | null> {
     try {
-      const token = await AsyncStorage.getItem('auth_token');
-      if (!token) return false;
+      const tokenData = await AsyncStorage.getItem(this.TOKEN_KEY);
+      if (!tokenData) {
+        return null;
+      }
 
-      // In real implementation, this would call refresh endpoint
-      // For now, just check if current token is valid
-      const authData = this.jwtManager.verifyToken(token);
-      return !!authData;
+      const authToken: AuthToken = JSON.parse(tokenData);
+      
+      // Check if token is expired
+      if (Date.now() > authToken.expiresAt) {
+        await this.logout();
+        return null;
+      }
+
+      return authToken.token;
     } catch (error) {
-      console.error('Token refresh error:', error);
-      return false;
+      console.error('Get token error:', error);
+      return null;
     }
   }
 }

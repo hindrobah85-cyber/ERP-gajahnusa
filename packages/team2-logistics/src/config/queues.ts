@@ -34,14 +34,14 @@ export async function setupQueues(): Promise<void> {
     notificationQueue = new Queue('notification processing', queueOptions);
 
     // Inventory queue processors
-    inventoryQueue.process('stock-update', async (job) => {
+    inventoryQueue.process('stock-update', async (job: any) => {
       const { productId, quantity, operation } = job.data;
       logger.info(`Processing stock update: ${productId}, ${quantity}, ${operation}`);
       // Add your stock update logic here
       return { success: true };
     });
 
-    inventoryQueue.process('reorder-check', async (job) => {
+    inventoryQueue.process('reorder-check', async (job: any) => {
       const { productId } = job.data;
       logger.info(`Processing reorder check: ${productId}`);
       // Add your reorder check logic here
@@ -49,14 +49,14 @@ export async function setupQueues(): Promise<void> {
     });
 
     // Shipping queue processors
-    shippingQueue.process('create-shipment', async (job) => {
+    shippingQueue.process('create-shipment', async (job: any) => {
       const { orderId, items, destination } = job.data;
       logger.info(`Processing shipment creation: ${orderId}`);
       // Add your shipment creation logic here
       return { success: true };
     });
 
-    shippingQueue.process('update-tracking', async (job) => {
+    shippingQueue.process('update-tracking', async (job: any) => {
       const { shipmentId, status, location } = job.data;
       logger.info(`Processing tracking update: ${shipmentId}, ${status}`);
       // Add your tracking update logic here
@@ -64,7 +64,7 @@ export async function setupQueues(): Promise<void> {
     });
 
     // Warehouse queue processors
-    warehouseQueue.process('optimize-layout', async (job) => {
+    warehouseQueue.process('optimize-layout', async (job: any) => {
       const { warehouseId } = job.data;
       logger.info(`Processing warehouse optimization: ${warehouseId}`);
       // Add your warehouse optimization logic here
@@ -72,7 +72,7 @@ export async function setupQueues(): Promise<void> {
     });
 
     // Notification queue processors
-    notificationQueue.process('send-notification', async (job) => {
+    notificationQueue.process('send-notification', async (job: any) => {
       const { type, recipient, message } = job.data;
       logger.info(`Processing notification: ${type} to ${recipient}`);
       // Add your notification logic here

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { logger } from '@/utils/logger';
+import { logger } from '../utils/logger';
 
 interface AuthRequest extends Request {
   user?: any;

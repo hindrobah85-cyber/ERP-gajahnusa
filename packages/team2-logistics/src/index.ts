@@ -16,11 +16,11 @@ import { setupQueues } from '@/config/queues';
 
 // Routes
 import inventoryRoutes from '@/routes/inventory';
-import warehouseRoutes from '@/routes/warehouse';
-import shippingRoutes from '@/routes/shipping';
-import trackingRoutes from '@/routes/tracking';
-import optimizationRoutes from '@/routes/optimization';
-import reportsRoutes from '@/routes/reports';
+import warehouseRoutes from './routes/warehouse';
+import shippingRoutes from './routes/shipping';
+import trackingRoutes from './routes/tracking';
+import optimizationRoutes from './routes/optimization';
+import reportsRoutes from './routes/reports';
 
 dotenv.config();
 
@@ -39,8 +39,8 @@ const PORT = process.env.PORT || 3002;
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: (parseInt(process.env.RATE_LIMIT_WINDOW) || 15) * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  windowMs: (parseInt(process.env.RATE_LIMIT_WINDOW || '15') || 15) * 60 * 1000,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100') || 100,
   message: 'Too many requests from this IP, please try again later.',
 });
 
@@ -77,15 +77,15 @@ app.use('/api/optimization', optimizationRoutes);
 app.use('/api/reports', reportsRoutes);
 
 // Socket.IO for real-time updates
-io.on('connection', (socket) => {
+io.on('connection', (socket: any) => {
   logger.info(`Client connected: ${socket.id}`);
   
-  socket.on('join_warehouse', (warehouseId) => {
+  socket.on('join_warehouse', (warehouseId: string) => {
     socket.join(`warehouse_${warehouseId}`);
     logger.info(`Client ${socket.id} joined warehouse ${warehouseId}`);
   });
   
-  socket.on('join_shipment', (shipmentId) => {
+  socket.on('join_shipment', (shipmentId: string) => {
     socket.join(`shipment_${shipmentId}`);
     logger.info(`Client ${socket.id} joined shipment ${shipmentId}`);
   });

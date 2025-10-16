@@ -15,11 +15,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@erp/shared-types": "^1.0.0",
-    "@erp/shared-utils": "^1.0.0", 
-    "@erp/shared-auth": "^1.0.0",
-    "@erp/shared-api-client": "^1.0.0",
-    "@erp/shared-ml-common": "^1.0.0",
     "expo": "~49.0.0",
     "expo-constants": "~14.4.2",
     "expo-status-bar": "~1.6.0",

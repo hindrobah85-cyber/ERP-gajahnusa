@@ -13,7 +13,7 @@ export async function setupRedis(): Promise<void> {
       password: process.env.REDIS_PASSWORD || undefined,
     });
 
-    redisClient.on('error', (err) => {
+    redisClient.on('error', (err: Error) => {
       logger.error('Redis Client Error:', err);
     });
 

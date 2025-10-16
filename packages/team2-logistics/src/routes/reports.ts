@@ -1,22 +1,22 @@
 import { Router } from 'express';
 import { 
-  getInventoryReport,
+  getLogisticsReport,
   getWarehouseReport,
-  getShippingReport,
-  getPerformanceReport,
+  getDeliveryReport,
+  getCostAnalysis,
   exportReport
-} from '@/controllers/reportsController';
-import { authenticateToken, authorize } from '@/middleware/authMiddleware';
+} from '../controllers/reportsController';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
 
 const router = Router();
 
 // All routes require authentication
 router.use(authenticateToken);
 
-router.get('/inventory', getInventoryReport);
-router.get('/warehouse/:warehouseId?', getWarehouseReport);
-router.get('/shipping', getShippingReport);
-router.get('/performance', authorize(['admin', 'logistics_manager']), getPerformanceReport);
-router.get('/:type/export', exportReport);
+router.get('/logistics', getLogisticsReport);
+router.get('/warehouse', getWarehouseReport);
+router.get('/delivery', getDeliveryReport);
+router.get('/cost-analysis', authorize(['admin', 'logistics_manager']), getCostAnalysis);
+router.post('/export', exportReport);
 
 export default router;

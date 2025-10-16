@@ -7,7 +7,7 @@ import {
   deleteWarehouse,
   getWarehouseInventory,
   optimizeWarehouseLayout
-} from '@/controllers/warehouseController';
+} from '../controllers/warehouseController';
 import { authenticateToken, authorize } from '@/middleware/authMiddleware';
 import { validateWarehouse } from '@/middleware/validationMiddleware';
 

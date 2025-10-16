@@ -14,7 +14,7 @@ import ProductsScreen from './screens/ProductsScreen';
 import RouteScreen from './screens/RouteScreen';
 
 // Import services
-import { AuthService } from './services/AuthService';
+// import { AuthService } from './services/AuthService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -74,15 +74,15 @@ function RootStack() {
 
   React.useEffect(() => {
     // Check if user is already logged in
-    AuthService.checkAuthStatus().then(setIsLoggedIn);
+    // AuthService.checkAuthStatus().then(setIsLoggedIn);
+    // For demo purposes, start with login screen
+    setIsLoggedIn(false);
   }, []);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!isLoggedIn ? (
-        <Stack.Screen name="Login">
-          {props => <LoginScreen {...props} onLogin={() => setIsLoggedIn(true)} />}
-        </Stack.Screen>
+        <Stack.Screen name="Login" component={LoginScreen} />
       ) : (
         <Stack.Screen name="Main" component={MainTabs} />
       )}
