@@ -2631,10 +2631,18 @@
         }
         
         function selectTagihan(element, invoiceNo, amount, tokoName) {
-            console.log('selectTagihan called for:', invoiceNo);
+            console.log('selectTagihan called for:', invoiceNo, 'amount param:', amount);
             
-            // Get original amount and check for partial payments
-            const originalAmount = parseInt(element.getAttribute('data-original-amount') || amount);
+            // Get original amount - prioritize data-original-amount, fallback to current amount
+            let originalAmount = parseInt(element.getAttribute('data-original-amount'));
+            
+            // If data-original-amount doesn't exist or is NaN, use amount parameter
+            if (isNaN(originalAmount) || !originalAmount) {
+                originalAmount = parseInt(amount);
+                // Store it for future use
+                element.setAttribute('data-original-amount', originalAmount);
+            }
+            
             const totalPaid = getTotalPaidForInvoice(invoiceNo);
             const remainingAmount = getInvoiceRemainingAmount(invoiceNo, originalAmount);
             
@@ -2644,7 +2652,7 @@
             selectedInvoice = {
                 number: invoiceNo,
                 amount: originalAmount,  // Store original amount for calculations
-                remainingAmount: remainingAmount,  // Store remaining for display
+                remainingAmount: remainingAmount > 0 ? remainingAmount : originalAmount,  // Store remaining for display
                 totalPaid: totalPaid,  // Store already paid amount
                 toko: tokoName,
                 element: element
