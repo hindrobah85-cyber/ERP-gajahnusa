@@ -2757,6 +2757,22 @@
                 return;
             }
             
+            // Check previous payments and remaining amount
+            const totalPaid = getTotalPaidForInvoice(selectedInvoice.number);
+            const originalAmount = selectedInvoice.amount;
+            const remainingAmount = originalAmount - totalPaid;
+            
+            // Validate payment amount tidak boleh lebih dari sisa tagihan
+            if (paymentAmount > remainingAmount) {
+                alert(`❌ PEMBAYARAN MELEBIHI SISA TAGIHAN!\n\n` +
+                      `💰 Total Faktur: Rp ${originalAmount.toLocaleString('id-ID')}\n` +
+                      `📊 Sudah Dibayar: Rp ${totalPaid.toLocaleString('id-ID')}\n` +
+                      `⚠️ Sisa Tagihan: Rp ${remainingAmount.toLocaleString('id-ID')}\n\n` +
+                      `🚫 Anda mencoba bayar: Rp ${paymentAmount.toLocaleString('id-ID')}\n\n` +
+                      `Silakan masukkan jumlah maksimal Rp ${remainingAmount.toLocaleString('id-ID')}`);
+                return;
+            }
+            
             if (!paymentType) {
                 alert('❌ Pilih jenis pembayaran (Lunas/Titip)!');
                 return;
@@ -2801,10 +2817,8 @@
             let statusMessage = '';
             let detailMessage = '';
             
-            // Check previous payments for this invoice
-            const totalPaid = getTotalPaidForInvoice(selectedInvoice.number);
-            const originalAmount = selectedInvoice.amount;
-            const remainingBeforePayment = originalAmount - totalPaid;
+            // Use the totalPaid and originalAmount already declared above
+            const remainingBeforePayment = remainingAmount;
             
             if (paymentType === 'lunas') {
                 // LUNAS = Langsung disetor ke perusahaan
