@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -1830,14 +1830,7 @@
                         <small id="paymentValidation" class="payment-validation"></small>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">💰 Jenis Pembayaran</label>
-                        <div class="payment-type-section">
-                            <button type="button" id="lunasBtn" class="payment-type-btn" onclick="setPaymentType('lunas')">✅ Lunas</button>
-                            <button type="button" id="titipBtn" class="payment-type-btn" onclick="setPaymentType('titip')">📦 Titip</button>
-                        </div>
-                        <input type="hidden" id="selectedPaymentType" value="">
-                    </div>
+                    <!-- Jenis Pembayaran (Lunas/Titip) DIHAPUS - Sistem otomatis detect overpayment -->
                     
                     <div class="form-group">
                         <label class="form-label">💳 Metode Pembayaran</label>
@@ -2817,14 +2810,7 @@
                         <small id="paymentValidation" class="payment-validation"></small>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">💰 Jenis Pembayaran</label>
-                        <div class="payment-type-section">
-                            <button type="button" id="lunasBtn" class="payment-type-btn" onclick="setPaymentType('lunas')">✅ Lunas</button>
-                            <button type="button" id="titipBtn" class="payment-type-btn" onclick="setPaymentType('titip')">📦 Titip</button>
-                        </div>
-                        <input type="hidden" id="selectedPaymentType" value="">
-                    </div>
+                    <!-- Jenis Pembayaran DIHAPUS - Batch payment otomatis alokasi -->
                     
                     <div class="form-group">
                         <label class="form-label">💳 Metode Pembayaran</label>
@@ -2865,12 +2851,12 @@
         // Process single payment
         function processPayment() {
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-            const paymentType = document.getElementById('selectedPaymentType').value;
+            // paymentType DIHAPUS - tidak diperlukan lagi
             const paymentMethod = document.getElementById('selectedPaymentMethod').value;
             const paymentNotes = document.getElementById('paymentNotes').value;
             const paymentProof = document.getElementById('paymentProof');
             
-            console.log('Processing payment:', {paymentAmount, paymentType, paymentMethod});
+            console.log('Processing payment:', {paymentAmount, paymentMethod});
             
             // Validation
             if (!paymentAmount || paymentAmount <= 0) {
@@ -2883,21 +2869,9 @@
             const originalAmount = selectedInvoice.amount;
             const remainingAmount = originalAmount - totalPaid;
             
-            // Validate payment amount tidak boleh lebih dari sisa tagihan
-            if (paymentAmount > remainingAmount) {
-                alert(`❌ PEMBAYARAN MELEBIHI SISA TAGIHAN!\n\n` +
-                      `💰 Total Faktur: Rp ${originalAmount.toLocaleString('id-ID')}\n` +
-                      `📊 Sudah Dibayar: Rp ${totalPaid.toLocaleString('id-ID')}\n` +
-                      `⚠️ Sisa Tagihan: Rp ${remainingAmount.toLocaleString('id-ID')}\n\n` +
-                      `🚫 Anda mencoba bayar: Rp ${paymentAmount.toLocaleString('id-ID')}\n\n` +
-                      `Silakan masukkan jumlah maksimal Rp ${remainingAmount.toLocaleString('id-ID')}`);
-                return;
-            }
+            // OVERPAYMENT DIPERBOLEHKAN - Validasi dihapus, sistem akan handle otomatis
             
-            if (!paymentType) {
-                alert('❌ Pilih jenis pembayaran (Lunas/Titip)!');
-                return;
-            }
+            // Jenis pembayaran validation DIHAPUS - sistem otomatis detect
             
             if (!paymentMethod) {
                 alert('❌ Pilih metode pembayaran!');
@@ -3202,41 +3176,11 @@
             document.getElementById('selectedPaymentType').value = 'batch';
         }
         
-        // Set payment type (manual selection)
+        // Set payment type (manual selection) - FUNCTION DIHAPUS
+        // Sistem otomatis detect lunas/cicilan berdasarkan jumlah pembayaran
         function setPaymentType(type) {
-            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value) || 0;
-            
-            if (paymentAmount <= 0) {
-                alert('❌ Masukkan jumlah pembayaran terlebih dahulu!');
-                return;
-            }
-            
-            // Get invoice amount from selectedInvoice
-            const invoiceAmount = selectedInvoice ? selectedInvoice.amount : 0;
-            
-            // Validate if lunas is possible
-            if (type === 'lunas' && paymentAmount < invoiceAmount) {
-                alert(`❌ Tidak bisa LUNAS!\nPembayaran: Rp ${paymentAmount.toLocaleString('id-ID')}\nTotal Faktur: Rp ${invoiceAmount.toLocaleString('id-ID')}\n\nGunakan TITIP untuk pembayaran sebagian.`);
-                return;
-            }
-            
-            // Update buttons - make them visually active
-            document.querySelectorAll('.payment-type-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.style.backgroundColor = '';
-                btn.style.color = '';
-            });
-            
-            const selectedBtn = document.getElementById(type + 'Btn');
-            if (selectedBtn) {
-                selectedBtn.classList.add('active');
-                selectedBtn.style.backgroundColor = '#667eea';
-                selectedBtn.style.color = 'white';
-            }
-            
-            document.getElementById('selectedPaymentType').value = type;
-            
-            console.log('Payment type set to:', type);
+            // Function deprecated - kept for compatibility
+            console.log('setPaymentType deprecated - payment type auto-detected');
         }
 
         // Select Payment Method
@@ -3330,23 +3274,39 @@
             alert('⏳ Memproses pembayaran...');
             
             setTimeout(() => {
+                // Process payment dengan support overpayment
+                const paymentResult = addInvoicePayment(currentInvoiceNo, paymentAmount, currentInvoiceAmount, tokoName);
+                
                 let message = `✅ Pembayaran Berhasil Diproses!\n\n`;
                 message += `� Faktur: ${currentInvoiceNo}\n`;
                 message += `💰 Total Faktur: Rp ${currentInvoiceAmount.toLocaleString('id-ID')}\n`;
                 message += `💳 Jumlah Bayar: Rp ${paymentAmount.toLocaleString('id-ID')}\n`;
-                message += `📋 Status: ${paymentType === 'lunas' ? '✅ LUNAS' : '📦 TITIP'}\n`;
-                message += `💳 Metode: ${methodText}\n\n`;
+                message += ` Metode: ${methodText}\n\n`;
                 
-                if (paymentType === 'lunas') {
+                // Check if there's overpayment
+                if (paymentResult && paymentResult.overpayment && paymentResult.overpayment > 0) {
+                    message += `✅ ${currentInvoiceNo}: LUNAS!\n`;
+                    message += `🔄 Overpayment: Rp ${paymentResult.overpayment.toLocaleString('id-ID')}\n`;
+                    message += `⚠️ Tidak ada nota berikutnya untuk alokasi otomatis\n`;
+                    message += `💵 Sisa uang dikembalikan atau dicatat sebagai deposit\n\n`;
+                } else if (paymentAmount >= currentInvoiceAmount) {
                     const change = paymentAmount - currentInvoiceAmount;
                     if (change > 0) {
-                        message += `� Kembalian: Rp ${change.toLocaleString('id-ID')}\n`;
+                        const nextInvoice = findNextUnpaidInvoice(tokoName, currentInvoiceNo);
+                        if (nextInvoice) {
+                            message += `âœ… ${currentInvoiceNo}: LUNAS!\n`;
+                            message += `ðŸ”„ Overpayment: Rp ${change.toLocaleString('id-ID')}\n`;
+                            message += `ðŸ”„ Sisa otomatis dialokasikan ke ${nextInvoice.invoiceNo}\n\n`;
+                        } else {
+                            message += `ðŸ’µ Kembalian: Rp ${change.toLocaleString('id-ID')}\n`;
+                        }
                     }
-                    message += `🎉 Faktur telah LUNAS!\n`;
+                    message += `ðŸŽ‰ Faktur ${currentInvoiceNo} telah LUNAS!\n`;
                 } else {
-                    const remaining = currentInvoiceAmount - paymentAmount;
+                    // Pembayaran sebagian (cicilan)
+                    const remaining = getInvoiceRemainingAmount(currentInvoiceNo, currentInvoiceAmount);
                     message += `⚠️ Sisa Tagihan: Rp ${remaining.toLocaleString('id-ID')}\n`;
-                    message += `📦 Status: TITIP (Pembayaran Sebagian)\n`;
+                    message += `📦 Status: CICILAN (Pembayaran Sebagian)\n`;
                 }
                 
                 if (methodText.includes('Transfer')) {
@@ -3363,8 +3323,11 @@
                 
                 alert(message);
                 
-                // Hide paid invoice from list if lunas
-                if (paymentType === 'lunas') {
+                // Update invoice status dan hide dari list jika lunas (auto-detect dari paymentResult)
+                const isFullyPaid = (paymentAmount >= currentInvoiceAmount) || 
+                                   (paymentResult && !paymentResult.overpayment);
+                
+                if (isFullyPaid) {
                     updateInvoiceStatus(currentInvoiceNo, 'lunas');
                     hideInvoiceFromList(currentInvoiceNo);
                 }
@@ -4800,14 +4763,7 @@
                         <small id="paymentValidationTelpon" class="payment-validation"></small>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">💰 Jenis Pembayaran</label>
-                        <div class="payment-type-section">
-                            <button type="button" id="lunasBtnTelpon" class="payment-type-btn" onclick="setPaymentTypeTelpon('lunas')">✅ Lunas</button>
-                            <button type="button" id="titipBtnTelpon" class="payment-type-btn" onclick="setPaymentTypeTelpon('titip')">📦 Titip</button>
-                        </div>
-                        <input type="hidden" id="selectedPaymentTypeTelpon" value="">
-                    </div>
+                    <!-- Jenis Pembayaran DIHAPUS - Telpon order otomatis detect -->
                     
                     <div class="form-group">
                         <label class="form-label">💳 Metode Pembayaran</label>
