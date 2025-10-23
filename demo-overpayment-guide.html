@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Overpayment & Total Toko - ERP Gajah Nusa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .feature-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .demo-box {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .toko-header {
+            background: #5568d3;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .invoice-item {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .invoice-item.lunas {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .invoice-item.cicilan {
+            background: #fff3cd;
+            border-left-color: #f39c12;
+        }
+        
+        .step {
+            background: #fff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 15px;
+        }
+        
+        .calculation {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+        }
+        
+        .result {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #17a2b8;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Demo Fitur Baru: Overpayment & Total Dinamis</h1>
+            <p>Sistem Pembayaran Cerdas dengan Alokasi Otomatis</p>
+        </div>
+        
+        <div class="content">
+            <!-- Feature 1: Overpayment -->
+            <div class="feature-card">
+                <h2>💰 FITUR 1: Pembayaran Melebihi Nominal (Overpayment)</h2>
+                <p><strong>Deskripsi:</strong> User dapat membayar melebihi nominal nota, sisa uang otomatis dipotongkan ke nota berikutnya dari toko yang sama.</p>
+                
+                <div class="demo-box">
+                    <h3>📊 Contoh Skenario</h3>
+                    
+                    <div class="toko-header">
+                        <span>🏪 Minimarket Sejahtera</span>
+                        <span>Total: Rp 4.500.000</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <strong>INV-2025-001:</strong> Rp 1.000.000 <span class="badge badge-success">✅ Lunas</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <strong>INV-2025-002:</strong> <s>Rp 1.500.000</s> Sisa: Rp 500.000 <span class="badge badge-warning">💰 Cicilan</span>
+                    </div>
+                    
+                    <div class="invoice-item">
+                        <strong>INV-2025-003:</strong> Rp 2.000.000 <span class="badge badge-info">📝 Belum Bayar</span>
+                    </div>
+                    
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <strong>User bayar INV-2025-002</strong>
+                        <div class="calculation">
+Jumlah Bayar: Rp 1.000.000
+Sisa Tagihan: Rp 500.000
+Overpayment: Rp 1.000.000 - Rp 500.000 = Rp 500.000
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">⬇️</div>
+                    
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <strong>Sistem Otomatis Proses</strong>
+                        <div class="calculation">
+✅ INV-2025-002: LUNAS! (bayar Rp 500.000)
+🔄 Sisa Rp 500.000 → Alokasi ke INV-2025-003
+💰 INV-2025-003: Rp 2.000.000 - Rp 500.000 = Rp 1.500.000
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">⬇️</div>
+                    
+                    <div class="result">
+                        <h4>✅ HASIL AKHIR:</h4>
+                        <ul>
+                            <li>✅ INV-2025-001: LUNAS</li>
+                            <li>✅ INV-2025-002: LUNAS (dari overpayment)</li>
+                            <li>💰 INV-2025-003: Sisa Rp 1.500.000 (cicilan)</li>
+                            <li>📊 Total Toko: Rp 4.500.000 - Rp 2.500.000 = <strong>Rp 2.000.000</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 2: Total Toko Dinamis -->
+            <div class="feature-card">
+                <h2>📊 FITUR 2: Total Toko Berkurang Otomatis</h2>
+                <p><strong>Deskripsi:</strong> Total toko berkurang real-time saat ada pembayaran cicilan atau pelunasan.</p>
+                
+                <div class="demo-box">
+                    <h3>📈 Perbandingan: Sebelum vs Sesudah</h3>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kondisi</th>
+                                <th>Total Original</th>
+                                <th>Total Dibayar</th>
+                                <th>Total Toko Ditampilkan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>❌ SEBELUM (SALAH)</strong></td>
+                                <td>Rp 4.500.000</td>
+                                <td>Rp 2.500.000</td>
+                                <td><span style="color: red;">Rp 4.500.000</span> (tidak berubah)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>✅ SESUDAH (BENAR)</strong></td>
+                                <td>Rp 4.500.000</td>
+                                <td>Rp 2.500.000</td>
+                                <td><span style="color: green;">Rp 2.000.000</span> (berkurang!)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="warning">
+                        <strong>⚠️ PENTING:</strong> Total toko sekarang menggunakan <code>remainingAmount</code> (sisa tagihan), bukan <code>originalAmount</code> lagi!
+                    </div>
+                    
+                    <div class="step">
+                        <span class="step-number">💡</span>
+                        <strong>Cara Kerja:</strong>
+                        <div class="calculation">
+// KODE SEBELUMNYA (SALAH):
+totalAmount += originalAmount; // Total tidak berubah
+
+// KODE BARU (BENAR):
+const remainingAmount = getInvoiceRemainingAmount(invoiceNo, originalAmount);
+totalAmount += remainingAmount; // Total berkurang sesuai pembayaran
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Test Cases -->
+            <div class="feature-card">
+                <h2>🧪 TEST CASES</h2>
+                
+                <div class="demo-box">
+                    <h3>Test Case 1: Overpayment Sederhana</h3>
+                    <div class="calculation">
+INPUT:
+- INV-2025-004: Rp 1.500.000 (sisa: Rp 1.500.000)
+- Bayar: Rp 2.000.000
+
+PROSES:
+- Lunas INV-2025-004: Rp 1.500.000
+- Overpayment: Rp 500.000
+- Cari nota berikutnya dari Minimarket Sejahtera
+
+EXPECTED OUTPUT:
+✅ INV-2025-004: LUNAS
+🔄 Overpayment Rp 500.000 → INV-2025-005 (jika ada)
+📊 Total toko berkurang Rp 1.500.000
+                    </div>
+                </div>
+                
+                <div class="demo-box">
+                    <h3>Test Case 2: Cicilan Biasa (Tidak Overpay)</h3>
+                    <div class="calculation">
+INPUT:
+- INV-2025-004: Rp 1.500.000
+- Bayar: Rp 1.000.000
+
+PROSES:
+- Cicilan INV-2025-004: Rp 1.000.000
+- Sisa: Rp 500.000
+
+EXPECTED OUTPUT:
+💰 INV-2025-004: Sisa Rp 500.000 (Cicilan)
+📊 Total toko berkurang Rp 1.000.000
+                    </div>
+                </div>
+                
+                <div class="demo-box">
+                    <h3>Test Case 3: Multiple Overpayment (Chain)</h3>
+                    <div class="calculation">
+INPUT:
+- INV-2025-001: Rp 500.000
+- INV-2025-002: Rp 800.000
+- INV-2025-003: Rp 1.200.000
+- Bayar INV-001: Rp 2.000.000
+
+PROSES:
+1. Lunas INV-001: Rp 500.000 → Sisa Rp 1.500.000
+2. Lunas INV-002: Rp 800.000 → Sisa Rp 700.000
+3. Cicil INV-003: Rp 700.000 → Sisa Rp 500.000
+
+EXPECTED OUTPUT:
+✅ INV-2025-001: LUNAS
+✅ INV-2025-002: LUNAS (dari overpayment)
+💰 INV-2025-003: Sisa Rp 500.000 (cicilan)
+📊 Total toko berkurang Rp 2.000.000
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technical Implementation -->
+            <div class="feature-card">
+                <h2>⚙️ IMPLEMENTASI TEKNIS</h2>
+                
+                <div class="demo-box">
+                    <h3>Fungsi Utama: addInvoicePayment()</h3>
+                    <div class="calculation">
+function addInvoicePayment(invoiceNo, amount, originalAmount, tokoName) {
+    const currentRemaining = originalAmount - payments[invoiceNo].totalPaid;
+    
+    if (amount > currentRemaining) {
+        // OVERPAYMENT DETECTED
+        overpayment = amount - currentRemaining;
+        payments[invoiceNo].totalPaid = originalAmount; // Lunas
+        
+        // Cari nota berikutnya
+        const nextInvoice = findNextUnpaidInvoice(tokoName, invoiceNo);
+        
+        if (nextInvoice) {
+            // RECURSIVE CALL - Alokasi ke nota berikutnya
+            return addInvoicePayment(
+                nextInvoice.invoiceNo, 
+                overpayment, 
+                nextInvoice.amount, 
+                tokoName
+            );
+        }
+    }
+}
+                    </div>
+                </div>
+                
+                <div class="demo-box">
+                    <h3>Fungsi Helper: findNextUnpaidInvoice()</h3>
+                    <div class="calculation">
+function findNextUnpaidInvoice(tokoName, currentInvoiceNo) {
+    // 1. Cari toko group berdasarkan nama
+    // 2. Loop semua invoice di toko tersebut
+    // 3. Skip invoice saat ini dan yang sudah lunas
+    // 4. Return invoice pertama yang masih ada sisanya
+    
+    return {
+        invoiceNo: 'INV-2025-005',
+        amount: 2000000,
+        remaining: 2000000
+    };
+}
+                    </div>
+                </div>
+                
+                <div class="demo-box">
+                    <h3>Update Total Toko</h3>
+                    <div class="calculation">
+// LOOP semua invoice di toko group
+remainingInvoices.forEach(invoice => {
+    const invoiceNo = invoice.dataset.invoice;
+    const originalAmount = parseInt(invoice.dataset.amount);
+    
+    // GUNAKAN REMAINING, BUKAN ORIGINAL
+    const remainingAmount = getInvoiceRemainingAmount(invoiceNo, originalAmount);
+    
+    totalAmount += remainingAmount; // ✅ Total berkurang otomatis
+});
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step by Step Guide -->
+            <div class="feature-card">
+                <h2>📝 CARA TEST DI DASHBOARD</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Buka sales-mobile-final.html</strong>
+                    <p>Klik menu "📋 Tagihan" di navigation</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Pilih Invoice untuk Test Overpayment</strong>
+                    <p>Contoh: INV-2025-004 (Minimarket Sejahtera) = Rp 1.500.000</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Bayar Melebihi Nominal</strong>
+                    <ul>
+                        <li>Klik "💰 Tunai"</li>
+                        <li>Input: Rp 2.000.000 (lebih Rp 500.000)</li>
+                        <li>Pilih metode: Cash</li>
+                        <li>Klik "Bayar"</li>
+                    </ul>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Verify Hasilnya</strong>
+                    <div class="result">
+                        <p>✅ Pop-up muncul:</p>
+                        <ul>
+                            <li>"✅ INV-2025-004: LUNAS!"</li>
+                            <li>"🔄 Overpayment: Rp 500.000"</li>
+                            <li>"🔄 Sisa otomatis dialokasikan ke INV-2025-005"</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Cek Total Toko</strong>
+                    <div class="result">
+                        <p>📊 Total Minimarket Sejahtera berkurang:</p>
+                        <ul>
+                            <li>Sebelum: Rp 4.500.000</li>
+                            <li>Sesudah: Rp 3.000.000 (berkurang Rp 1.500.000)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <strong>Test Persistensi</strong>
+                    <p>Refresh browser (F5) - Data cicilan tetap ada!</p>
+                </div>
+            </div>
+            
+            <!-- Console Commands -->
+            <div class="feature-card">
+                <h2>🔧 DEBUG COMMANDS (Console F12)</h2>
+                
+                <div class="calculation">
+// Lihat semua payment data
+JSON.parse(localStorage.getItem('invoicePayments'))
+
+// Cek sisa tagihan invoice tertentu
+getInvoiceRemainingAmount('INV-2025-004', 1500000)
+
+// Cari nota berikutnya
+findNextUnpaidInvoice('Minimarket Sejahtera', 'INV-2025-004')
+
+// Update semua display
+updateAllInvoiceDisplays()
+
+// Reset data test
+localStorage.clear()
+                </div>
+            </div>
+            
+            <!-- Summary -->
+            <div class="feature-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                <h2 style="color: white;">🎯 RINGKASAN FITUR BARU</h2>
+                <table style="color: white;">
+                    <tr>
+                        <th style="background: rgba(255,255,255,0.2);">Fitur</th>
+                        <th style="background: rgba(255,255,255,0.2);">Status</th>
+                        <th style="background: rgba(255,255,255,0.2);">Manfaat</th>
+                    </tr>
+                    <tr>
+                        <td>💰 Overpayment Support</td>
+                        <td>✅ AKTIF</td>
+                        <td>User bisa bayar lebih, sisa otomatis ke nota berikutnya</td>
+                    </tr>
+                    <tr>
+                        <td>📊 Total Toko Dinamis</td>
+                        <td>✅ AKTIF</td>
+                        <td>Total berkurang real-time sesuai pembayaran</td>
+                    </tr>
+                    <tr>
+                        <td>🔄 Auto Allocation</td>
+                        <td>✅ AKTIF</td>
+                        <td>Overpayment otomatis alokasi ke nota berikutnya</td>
+                    </tr>
+                    <tr>
+                        <td>💾 Persistent Storage</td>
+                        <td>✅ AKTIF</td>
+                        <td>Data tetap setelah refresh browser</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
