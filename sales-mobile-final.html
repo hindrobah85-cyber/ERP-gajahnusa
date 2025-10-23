@@ -2161,11 +2161,13 @@
                         invoiceCountEl.textContent = `${count} faktur`;
                     }
                     
-                    // Update total nominal - use original amount, not remaining
+                    // Update total nominal - use remaining amount (berkurang saat cicilan)
                     let totalAmount = 0;
                     remainingInvoices.forEach(invoice => {
+                        const invoiceNo = invoice.dataset.invoice;
                         const originalAmount = parseInt(invoice.getAttribute('data-original-amount') || invoice.dataset.amount) || 0;
-                        totalAmount += originalAmount;
+                        const remainingAmount = getInvoiceRemainingAmount(invoiceNo, originalAmount);
+                        totalAmount += remainingAmount; // Use remaining, bukan original
                     });
                     
                     if (totalAmountEl) {
@@ -2439,7 +2441,7 @@
             return payments ? JSON.parse(payments) : {};
         }
         
-        function addInvoicePayment(invoiceNo, amount, originalAmount) {
+        function addInvoicePayment(invoiceNo, amount, originalAmount, tokoName) {
             const payments = getInvoicePayments();
             
             if (!payments[invoiceNo]) {
@@ -2450,16 +2452,96 @@
                 };
             }
             
-            payments[invoiceNo].totalPaid += amount;
-            payments[invoiceNo].paymentHistory.push({
-                amount: amount,
-                date: new Date().toISOString(),
-                timestamp: new Date().toLocaleString('id-ID')
-            });
+            // Calculate remaining after this payment
+            const currentRemaining = originalAmount - payments[invoiceNo].totalPaid;
+            let overpayment = 0;
+            
+            if (amount > currentRemaining) {
+                // Ada overpayment - alokasikan ke nota berikutnya
+                overpayment = amount - currentRemaining;
+                payments[invoiceNo].totalPaid = originalAmount; // Lunas penuh
+                payments[invoiceNo].paymentHistory.push({
+                    amount: currentRemaining,
+                    date: new Date().toISOString(),
+                    timestamp: new Date().toLocaleString('id-ID'),
+                    note: 'Pelunasan'
+                });
+                console.log(`✅ Invoice ${invoiceNo} LUNAS. Overpayment: Rp ${overpayment.toLocaleString('id-ID')}`);
+                
+                // Mark as paid
+                markInvoiceAsPaid(invoiceNo);
+                
+                // Cari nota berikutnya dari toko yang sama
+                if (overpayment > 0 && tokoName) {
+                    const nextInvoice = findNextUnpaidInvoice(tokoName, invoiceNo);
+                    if (nextInvoice) {
+                        console.log(`🔄 Alokasi overpayment Rp ${overpayment.toLocaleString('id-ID')} ke ${nextInvoice.invoiceNo}`);
+                        // Recursive call untuk nota berikutnya
+                        return addInvoicePayment(nextInvoice.invoiceNo, overpayment, nextInvoice.amount, tokoName);
+                    } else {
+                        console.log(`⚠️ Tidak ada nota berikutnya. Overpayment: Rp ${overpayment.toLocaleString('id-ID')}`);
+                        return { overpayment: overpayment, lastInvoice: invoiceNo };
+                    }
+                }
+            } else {
+                // Normal payment atau cicilan
+                payments[invoiceNo].totalPaid += amount;
+                payments[invoiceNo].paymentHistory.push({
+                    amount: amount,
+                    date: new Date().toISOString(),
+                    timestamp: new Date().toLocaleString('id-ID')
+                });
+                
+                // Check if now fully paid
+                if (payments[invoiceNo].totalPaid >= originalAmount) {
+                    markInvoiceAsPaid(invoiceNo);
+                }
+            }
             
             localStorage.setItem('invoicePayments', JSON.stringify(payments));
             console.log(`Payment recorded for ${invoiceNo}: Rp ${amount.toLocaleString('id-ID')}`);
             return payments[invoiceNo];
+        }
+        
+        // Helper function to find next unpaid invoice from same toko
+        function findNextUnpaidInvoice(tokoName, currentInvoiceNo) {
+            const tokoGroups = document.querySelectorAll('.toko-group');
+            let targetGroup = null;
+            
+            // Find toko group
+            tokoGroups.forEach(group => {
+                if (group.dataset.toko === tokoName) {
+                    targetGroup = group;
+                }
+            });
+            
+            if (!targetGroup) return null;
+            
+            // Get all invoices from this toko
+            const invoices = targetGroup.querySelectorAll('.tagihan-item');
+            const paidInvoices = getPaidInvoices();
+            
+            for (let invoice of invoices) {
+                const invoiceNo = invoice.dataset.invoice;
+                const invoiceAmount = parseInt(invoice.getAttribute('data-original-amount') || invoice.dataset.amount);
+                
+                // Skip current invoice dan yang sudah lunas
+                if (invoiceNo === currentInvoiceNo || paidInvoices.includes(invoiceNo)) {
+                    continue;
+                }
+                
+                // Cek apakah masih ada sisa tagihan
+                const remaining = getInvoiceRemainingAmount(invoiceNo, invoiceAmount);
+                if (remaining > 0) {
+                    return {
+                        invoiceNo: invoiceNo,
+                        amount: invoiceAmount,
+                        remaining: remaining
+                    };
+                }
+            }
+            
+            return null; // Tidak ada nota berikutnya
         }
         
         function getInvoiceRemainingAmount(invoiceNo, originalAmount) {
@@ -3198,6 +3280,7 @@
             const paymentType = document.getElementById('selectedPaymentType').value;
             const paymentMethod = document.querySelector('.payment-method.selected');
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value) || 0;
+            const tokoName = document.querySelector(`[data-invoice="${currentInvoiceNo}"]`)?.closest('.toko-group')?.dataset.toko || '';
             
             if (!paymentType || !paymentMethod || paymentAmount <= 0) {
                 alert('❌ Lengkapi semua field pembayaran!');
