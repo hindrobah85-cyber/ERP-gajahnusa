@@ -2161,11 +2161,11 @@
                         invoiceCountEl.textContent = `${count} faktur`;
                     }
                     
-                    // Update total nominal
+                    // Update total nominal - use original amount, not remaining
                     let totalAmount = 0;
                     remainingInvoices.forEach(invoice => {
-                        const amount = parseInt(invoice.dataset.amount) || 0;
-                        totalAmount += amount;
+                        const originalAmount = parseInt(invoice.getAttribute('data-original-amount') || invoice.dataset.amount) || 0;
+                        totalAmount += originalAmount;
                     });
                     
                     if (totalAmountEl) {
@@ -2179,15 +2179,19 @@
             updateTagihanCounter();
             updateTokoSelectorCounts(); // Update dropdown counts
             
-            // Update invoice displays for partial payments
+            // Update invoice displays for partial payments - increased delay
             setTimeout(() => {
                 updateAllInvoiceDisplays();
-            }, 200);
+                console.log('Invoice displays updated after load');
+            }, 500);
         }
         
         // Update all invoice displays to show remaining amounts
         function updateAllInvoiceDisplays() {
+            console.log('=== updateAllInvoiceDisplays called ===');
             const allInvoices = document.querySelectorAll('.tagihan-item');
+            console.log(`Found ${allInvoices.length} invoices to check`);
+            
             allInvoices.forEach(item => {
                 const invoiceNo = item.dataset.invoice;
                 const originalAmount = parseInt(item.getAttribute('data-original-amount') || item.dataset.amount);
@@ -2195,16 +2199,20 @@
                 // Store original amount if not already stored
                 if (!item.getAttribute('data-original-amount')) {
                     item.setAttribute('data-original-amount', originalAmount);
+                    console.log(`Stored original amount for ${invoiceNo}: ${originalAmount}`);
                 }
                 
                 const totalPaid = getTotalPaidForInvoice(invoiceNo);
                 const remainingAmount = getInvoiceRemainingAmount(invoiceNo, originalAmount);
                 
-                if (totalPaid > 0 && remainingAmount > 0) {
+                console.log(`Invoice ${invoiceNo}: Original=${originalAmount}, Paid=${totalPaid}, Remaining=${remainingAmount}`);
+                
+                if (totalPaid > 0 && remainingAmount > 0 && remainingAmount < originalAmount) {
                     // Update display for partially paid invoices
                     const amountEl = item.querySelector('.invoice-amount');
                     if (amountEl) {
                         amountEl.innerHTML = `💰 <span style="text-decoration: line-through; color: #999;">Rp ${originalAmount.toLocaleString('id-ID')}</span><br><span style="color: #f39c12; font-weight: bold;">Sisa: Rp ${remainingAmount.toLocaleString('id-ID')}</span>`;
+                        console.log(`✅ Updated display for ${invoiceNo} with remaining amount`);
                     }
                     
                     // Update data-amount for calculations
@@ -2218,6 +2226,8 @@
                         statusEl.style.background = '#f39c12';
                         statusEl.style.color = 'white';
                     }
+                } else if (totalPaid === 0) {
+                    console.log(`No payment for ${invoiceNo} yet`);
                 }
             });
             
@@ -2226,6 +2236,8 @@
             tokoGroups.forEach(group => {
                 updateTokoGroupTotals(group);
             });
+            
+            console.log('=== updateAllInvoiceDisplays completed ===');
         }
 
         function toggleTokoGroup(header) {
@@ -2464,6 +2476,32 @@
             return payments[invoiceNo] ? payments[invoiceNo].totalPaid : 0;
         }
         
+        // Function to reset/delete payment history for an invoice
+        function resetInvoicePayment(invoiceNo) {
+            if (!confirm(`⚠️ HAPUS RIWAYAT PEMBAYARAN?\n\nInvoice: ${invoiceNo}\n\nSemua riwayat pembayaran untuk invoice ini akan dihapus.\nProses ini TIDAK BISA dibatalkan!\n\nLanjutkan?`)) {
+                return;
+            }
+            
+            // Get current payments
+            const payments = getInvoicePayments();
+            
+            // Delete payment for this invoice
+            if (payments[invoiceNo]) {
+                delete payments[invoiceNo];
+                localStorage.setItem('invoicePayments', JSON.stringify(payments));
+                console.log(`Payment history deleted for ${invoiceNo}`);
+                
+                alert('✅ Riwayat pembayaran berhasil dihapus!\n\nHalaman akan di-refresh.');
+                
+                // Refresh to tagihan page
+                setTimeout(() => {
+                    showTagihan();
+                }, 500);
+            } else {
+                alert('❌ Tidak ada riwayat pembayaran untuk invoice ini.');
+            }
+        }
+        
         // Function to count unpaid invoices for a toko
         function getUnpaidInvoiceCountForToko(tokoName) {
             // Cari toko group berdasarkan nama toko
@@ -2678,6 +2716,7 @@
             if (selectedInvoice.totalPaid > 0) {
                 paymentInfo += `<p style="color: #f39c12;">📊 Sudah Dibayar: Rp ${selectedInvoice.totalPaid.toLocaleString('id-ID')}</p>`;
                 paymentInfo += `<p style="color: #e74c3c; font-weight: bold;">⚠️ Sisa Tagihan: Rp ${selectedInvoice.remainingAmount.toLocaleString('id-ID')}</p>`;
+                paymentInfo += `<button onclick="resetInvoicePayment('${selectedInvoice.number}')" class="btn btn-warning" style="margin-top: 10px; font-size: 12px;">🗑️ Hapus Riwayat Pembayaran</button>`;
             }
             
             const content = `
@@ -2918,12 +2957,13 @@
                 if (invoiceToHide) {
                     setTimeout(() => {
                         hideInvoiceFromList(invoiceToHide);
-                    }, 300);
+                    }, 600);
                 } else {
                     // If partially paid, update the invoice amount display
                     setTimeout(() => {
                         updateInvoiceAmountDisplay(selectedInvoice.number, selectedInvoice.amount);
-                    }, 300);
+                        console.log('Invoice amount display updated after payment');
+                    }, 600);
                 }
             }, 500);
         }
@@ -3360,25 +3400,32 @@
             console.log(`Updating invoice ${invoiceNo}: Original Rp ${originalAmount.toLocaleString('id-ID')}, Paid Rp ${totalPaid.toLocaleString('id-ID')}, Remaining Rp ${remainingAmount.toLocaleString('id-ID')}`);
             
             invoiceItems.forEach(item => {
+                // Store original amount if not already stored
+                if (!item.getAttribute('data-original-amount')) {
+                    item.setAttribute('data-original-amount', originalAmount);
+                    console.log(`Stored original amount for ${invoiceNo}: ${originalAmount}`);
+                }
+                
                 // Update the amount display
                 const amountEl = item.querySelector('.invoice-amount');
                 if (amountEl) {
-                    if (remainingAmount < originalAmount) {
+                    if (totalPaid > 0 && remainingAmount > 0 && remainingAmount < originalAmount) {
                         // Show remaining amount with strikethrough original
                         amountEl.innerHTML = `💰 <span style="text-decoration: line-through; color: #999;">Rp ${originalAmount.toLocaleString('id-ID')}</span><br><span style="color: #f39c12; font-weight: bold;">Sisa: Rp ${remainingAmount.toLocaleString('id-ID')}</span>`;
+                        console.log(`Updated display for ${invoiceNo} with remaining amount`);
                     } else {
                         amountEl.innerHTML = `💰 Rp ${originalAmount.toLocaleString('id-ID')}`;
                     }
                 }
                 
-                // Update data-amount attribute for calculations
+                // Update data-amount attribute for calculations (but keep original separate)
                 item.dataset.amount = remainingAmount;
                 
                 // Add visual indicator for partial payment
                 if (totalPaid > 0 && remainingAmount > 0) {
                     item.style.borderLeft = '4px solid #f39c12';
                     const statusEl = item.querySelector('.tagihan-status');
-                    if (statusEl && !statusEl.textContent.includes('CICILAN')) {
+                    if (statusEl && !statusEl.textContent.includes('Cicilan')) {
                         statusEl.innerHTML = '💰 Cicilan';
                         statusEl.className = 'tagihan-status';
                         statusEl.style.background = '#f39c12';
@@ -3402,8 +3449,9 @@
             
             let totalAmount = 0;
             remainingInvoices.forEach(invoice => {
-                const amount = parseInt(invoice.dataset.amount) || 0;
-                totalAmount += amount;
+                // Use original amount, not remaining amount for toko total
+                const originalAmount = parseInt(invoice.getAttribute('data-original-amount') || invoice.dataset.amount) || 0;
+                totalAmount += originalAmount;
             });
             
             if (invoiceCountEl) {
@@ -3413,6 +3461,8 @@
             if (totalAmountEl) {
                 totalAmountEl.textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
             }
+            
+            console.log(`Toko total updated: ${remainingInvoices.length} invoices, Rp ${totalAmount.toLocaleString('id-ID')}`);
         }
         
         // Hide paid invoice from list
