@@ -433,6 +433,36 @@
             background: #e8f5e8;
         }
 
+        .payment-type-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .payment-type-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .payment-type-btn.active {
+            border-color: #667eea !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        .payment-type-btn.active strong {
+            color: white !important;
+        }
+
+        .payment-type-btn.active div {
+            color: white !important;
+        }
+
         .file-upload {
             margin: 15px 0;
             padding: 20px;
@@ -1348,6 +1378,186 @@
             alert('✏️ Silahkan edit pilihan toko dan generate rute lagi');
         }
 
+        // ========================================
+        // DATA STORE - Invoice & Payment Tracking
+        // ========================================
+
+        // Global invoice data store
+        let invoiceDataStore = {
+            tokos: [
+                {
+                    name: "Toko Sari Rasa",
+                    invoices: [
+                        {
+                            number: "INV-2025-001",
+                            originalAmount: 2500000,
+                            date: "2025-07-20",
+                            status: "wajib-tagih",
+                            paymentTerms: "Cash/Transfer/QRIS",
+                            dueDate: 30,
+                            bankInfo: "BCA: 1234567890"
+                        },
+                        {
+                            number: "INV-2025-005",
+                            originalAmount: 1750000,
+                            date: "2025-09-01",
+                            status: "lancar",
+                            paymentTerms: "Cash/Cek/Giro",
+                            dueDate: 45,
+                            bankInfo: "Min cek: Rp 1.000.000"
+                        },
+                        {
+                            number: "INV-2025-009",
+                            originalAmount: 2500000,
+                            date: "2025-09-08",
+                            status: "lancar",
+                            paymentTerms: "Transfer/QRIS",
+                            dueDate: 30,
+                            bankInfo: "Mandiri: 0987654321"
+                        }
+                    ]
+                },
+                {
+                    name: "Minimarket Sejahtera",
+                    invoices: [
+                        {
+                            number: "INV-2025-004",
+                            originalAmount: 1500000,
+                            date: "2025-09-08",
+                            status: "lancar",
+                            paymentTerms: "Cash/Transfer/QRIS",
+                            dueDate: 30,
+                            bankInfo: "BCA: 1234567890"
+                        },
+                        {
+                            number: "INV-2025-007",
+                            originalAmount: 2250000,
+                            date: "2025-09-03",
+                            status: "lancar",
+                            paymentTerms: "Cash/Cek/Giro",
+                            dueDate: 45,
+                            bankInfo: "Min cek: Rp 1.000.000"
+                        }
+                    ]
+                },
+                {
+                    name: "Warung Maju Jaya",
+                    invoices: [
+                        {
+                            number: "INV-2025-006",
+                            originalAmount: 2200000,
+                            date: "2025-07-25",
+                            status: "terlambat",
+                            paymentTerms: "Cash Only",
+                            dueDate: 14,
+                            bankInfo: "Langsung ke kasir"
+                        },
+                        {
+                            number: "INV-2025-010",
+                            originalAmount: 1750000,
+                            date: "2025-09-05",
+                            status: "lancar",
+                            paymentTerms: "Cash/Transfer",
+                            dueDate: 30,
+                            bankInfo: "BRI: 5678901234"
+                        }
+                    ]
+                },
+                {
+                    name: "Toko Berkah Rezeki",
+                    invoices: [
+                        {
+                            number: "INV-2025-003",
+                            originalAmount: 3200000,
+                            date: "2025-08-15",
+                            status: "lancar",
+                            paymentTerms: "Cash/Transfer/Cek",
+                            dueDate: 45,
+                            bankInfo: "BCA: 9876543210"
+                        },
+                        {
+                            number: "INV-2025-008",
+                            originalAmount: 1800000,
+                            date: "2025-09-07",
+                            status: "lancar",
+                            paymentTerms: "Cash/QRIS",
+                            dueDate: 30,
+                            bankInfo: "QRIS: 08123456789"
+                        }
+                    ]
+                },
+                {
+                    name: "Warung Pak Budi",
+                    invoices: [
+                        {
+                            number: "INV-2025-002",
+                            originalAmount: 1200000,
+                            date: "2025-08-20",
+                            status: "lancar",
+                            paymentTerms: "Cash Only",
+                            dueDate: 30,
+                            bankInfo: "Langsung ke pemilik"
+                        }
+                    ]
+                },
+                {
+                    name: "Toko Sumber Makmur",
+                    invoices: [
+                        {
+                            number: "INV-2025-011",
+                            originalAmount: 2800000,
+                            date: "2025-09-10",
+                            status: "lancar",
+                            paymentTerms: "Cash/Transfer/Giro",
+                            dueDate: 45,
+                            bankInfo: "Mandiri: 1122334455"
+                        },
+                        {
+                            number: "INV-2025-012",
+                            originalAmount: 1500000,
+                            date: "2025-09-12",
+                            status: "lancar",
+                            paymentTerms: "Cash/Transfer",
+                            dueDate: 30,
+                            bankInfo: "BNI: 6677889900"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Get active (unpaid) invoices for a toko
+        function getActiveInvoicesForToko(tokoName) {
+            const toko = invoiceDataStore.tokos.find(t => t.name === tokoName);
+            if (!toko) return [];
+            
+            return toko.invoices.filter(invoice => {
+                const remaining = getInvoiceRemainingAmount(invoice.number, invoice.originalAmount);
+                return remaining > 0; // Only show unpaid invoices
+            });
+        }
+
+        // Get total remaining amount for a toko
+        function getTokoTotalRemaining(tokoName) {
+            const activeInvoices = getActiveInvoicesForToko(tokoName);
+            return activeInvoices.reduce((total, invoice) => {
+                const remaining = getInvoiceRemainingAmount(invoice.number, invoice.originalAmount);
+                return total + remaining;
+            }, 0);
+        }
+
+        // Helper: Build dropdown options dynamically
+        function buildTokoDropdownOptions() {
+            let options = '';
+            invoiceDataStore.tokos.forEach(toko => {
+                const activeInvoices = getActiveInvoicesForToko(toko.name);
+                if (activeInvoices.length > 0) {
+                    options += `<option value="${toko.name}">🏪 ${toko.name} (${activeInvoices.length} faktur)</option>`;
+                }
+            });
+            return options;
+        }
+
         // Fix Call Plan
         function fixCallPlan() {
             if (!currentRoute || currentRoute.length === 0) {
@@ -1830,7 +2040,25 @@
                         <small id="paymentValidation" class="payment-validation"></small>
                     </div>
                     
-                    <!-- Jenis Pembayaran (Lunas/Titip) DIHAPUS - Sistem otomatis detect overpayment -->
+                    <div class="form-group">
+                        <label class="form-label">🔖 Jenis Pembayaran</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                            <div id="lunasBtn" class="payment-type-btn" onclick="selectPaymentType(this, 'lunas')">
+                                <div style="font-size: 24px; margin-bottom: 3px;">✅</div>
+                                <strong style="font-size: 13px;">Lunas</strong>
+                                <div style="font-size: 10px; margin-top: 3px;">Bayar penuh</div>
+                            </div>
+                            <div id="cicilanBtn" class="payment-type-btn active" onclick="selectPaymentType(this, 'cicilan')">
+                                <div style="font-size: 24px; margin-bottom: 3px;">💳</div>
+                                <strong style="font-size: 13px;">Cicilan</strong>
+                                <div style="font-size: 10px; margin-top: 3px;">Bayar sebagian</div>
+                            </div>
+                        </div>
+                        <div style="background: #e7f3ff; padding: 8px; border-radius: 6px; margin-top: 8px; font-size: 11px; border-left: 3px solid #2196F3;">
+                            💡 <strong>Info:</strong> Sistem otomatis mendeteksi Lunas/Cicilan berdasarkan jumlah pembayaran
+                        </div>
+                        <input type="hidden" id="selectedPaymentType" value="cicilan">
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">💳 Metode Pembayaran</label>
@@ -2810,7 +3038,25 @@
                         <small id="paymentValidation" class="payment-validation"></small>
                     </div>
                     
-                    <!-- Jenis Pembayaran DIHAPUS - Batch payment otomatis alokasi -->
+                    <div class="form-group">
+                        <label class="form-label">🔖 Jenis Pembayaran</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                            <div id="lunasBtn" class="payment-type-btn" onclick="selectPaymentType(this, 'lunas')">
+                                <div style="font-size: 24px; margin-bottom: 3px;">✅</div>
+                                <strong style="font-size: 13px;">Lunas</strong>
+                                <div style="font-size: 10px; margin-top: 3px;">Bayar penuh</div>
+                            </div>
+                            <div id="cicilanBtn" class="payment-type-btn active" onclick="selectPaymentType(this, 'cicilan')">
+                                <div style="font-size: 24px; margin-bottom: 3px;">💳</div>
+                                <strong style="font-size: 13px;">Cicilan</strong>
+                                <div style="font-size: 10px; margin-top: 3px;">Bayar sebagian</div>
+                            </div>
+                        </div>
+                        <div style="background: #e7f3ff; padding: 8px; border-radius: 6px; margin-top: 8px; font-size: 11px; border-left: 3px solid #2196F3;">
+                            💡 <strong>Info:</strong> Sistem otomatis mendeteksi Lunas/Cicilan berdasarkan jumlah pembayaran
+                        </div>
+                        <input type="hidden" id="selectedPaymentType" value="cicilan">
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">💳 Metode Pembayaran</label>
@@ -2851,12 +3097,12 @@
         // Process single payment
         function processPayment() {
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-            // paymentType DIHAPUS - tidak diperlukan lagi
+            const paymentType = document.getElementById('selectedPaymentType').value; // ✅ FIXED: Get payment type
             const paymentMethod = document.getElementById('selectedPaymentMethod').value;
             const paymentNotes = document.getElementById('paymentNotes').value;
             const paymentProof = document.getElementById('paymentProof');
             
-            console.log('Processing payment:', {paymentAmount, paymentMethod});
+            console.log('Processing payment:', {paymentAmount, paymentType, paymentMethod});
             
             // Validation
             if (!paymentAmount || paymentAmount <= 0) {
@@ -2870,8 +3116,6 @@
             const remainingAmount = originalAmount - totalPaid;
             
             // OVERPAYMENT DIPERBOLEHKAN - Validasi dihapus, sistem akan handle otomatis
-            
-            // Jenis pembayaran validation DIHAPUS - sistem otomatis detect
             
             if (!paymentMethod) {
                 alert('❌ Pilih metode pembayaran!');
@@ -2915,45 +3159,44 @@
             // Use the totalPaid and originalAmount already declared above
             const remainingBeforePayment = remainingAmount;
             
-            if (paymentType === 'lunas') {
-                // LUNAS = Langsung disetor ke perusahaan
-                detailMessage = '💼 Status: Disetor langsung ke perusahaan';
-                
-                // Record this payment
-                const paymentInfo = addInvoicePayment(selectedInvoice.number, paymentAmount, originalAmount);
-                const newTotalPaid = paymentInfo.totalPaid;
-                const newRemaining = originalAmount - newTotalPaid;
-                
-                if (newTotalPaid >= originalAmount) {
-                    statusMessage = '✅ PEMBAYARAN LUNAS PENUH';
-                    if (totalPaid > 0) {
-                        detailMessage += `\n📊 Riwayat: Sudah dibayar Rp ${totalPaid.toLocaleString('id-ID')} sebelumnya`;
-                        detailMessage += `\n💰 Cicilan ini: Rp ${paymentAmount.toLocaleString('id-ID')}`;
-                        detailMessage += `\n✅ Total Terbayar: Rp ${newTotalPaid.toLocaleString('id-ID')}`;
-                    }
-                } else {
-                    statusMessage = '📦 PEMBAYARAN CICILAN';
-                    detailMessage += `\n💰 Total Faktur: Rp ${originalAmount.toLocaleString('id-ID')}`;
-                    if (totalPaid > 0) {
-                        detailMessage += `\n📊 Sudah dibayar: Rp ${totalPaid.toLocaleString('id-ID')}`;
-                    }
-                    detailMessage += `\n💵 Cicilan ini: Rp ${paymentAmount.toLocaleString('id-ID')}`;
+            // Record this payment first
+            const paymentInfo = addInvoicePayment(selectedInvoice.number, paymentAmount, originalAmount, selectedInvoice.toko);
+            const newTotalPaid = paymentInfo.totalPaid;
+            const newRemaining = originalAmount - newTotalPaid;
+            
+            // Determine status based on total paid vs original amount
+            if (newTotalPaid >= originalAmount) {
+                // FULLY PAID
+                statusMessage = '✅ PEMBAYARAN LUNAS PENUH';
+                detailMessage = '💼 Status: Invoice telah dibayar penuh';
+                if (totalPaid > 0) {
+                    detailMessage += `\n📊 Riwayat: Sudah dibayar Rp ${totalPaid.toLocaleString('id-ID')} sebelumnya`;
+                    detailMessage += `\n💰 Pembayaran terakhir: Rp ${paymentAmount.toLocaleString('id-ID')}`;
                     detailMessage += `\n✅ Total Terbayar: Rp ${newTotalPaid.toLocaleString('id-ID')}`;
-                    detailMessage += `\n⚠️ Sisa tagihan: Rp ${newRemaining.toLocaleString('id-ID')}`;
+                }
+                
+                // Check for overpayment
+                if (paymentInfo.overpayment && paymentInfo.overpayment > 0) {
+                    detailMessage += `\n\n🎯 KELEBIHAN PEMBAYARAN TERDETEKSI!`;
+                    detailMessage += `\n💰 Kelebihan: Rp ${paymentInfo.overpayment.toLocaleString('id-ID')}`;
+                    if (paymentInfo.nextInvoice) {
+                        detailMessage += `\n� Dialokasikan ke: ${paymentInfo.nextInvoice}`;
+                        detailMessage += `\n💵 Jumlah alokasi: Rp ${paymentInfo.allocatedAmount.toLocaleString('id-ID')}`;
+                        if (paymentInfo.remainingOverpayment > 0) {
+                            detailMessage += `\n⚠️ Sisa kelebihan: Rp ${paymentInfo.remainingOverpayment.toLocaleString('id-ID')} (untuk nota berikutnya)`;
+                        }
+                    }
                 }
             } else {
-                // TITIP = Dititip ke sales dulu
-                statusMessage = '📦 PEMBAYARAN DITITIP';
-                detailMessage = '👤 Status: Dititip ke sales, belum disetor ke kantor';
-                
-                // Record this payment for titip as well
-                const paymentInfo = addInvoicePayment(selectedInvoice.number, paymentAmount, originalAmount);
-                const newTotalPaid = paymentInfo.totalPaid;
-                const newRemaining = originalAmount - newTotalPaid;
-                
-                if (newRemaining > 0) {
-                    detailMessage += `\n💰 Sisa tagihan: Rp ${newRemaining.toLocaleString('id-ID')}`;
+                // PARTIAL PAYMENT (CICILAN)
+                statusMessage = '📦 PEMBAYARAN CICILAN';
+                detailMessage = `� Total Faktur: Rp ${originalAmount.toLocaleString('id-ID')}`;
+                if (totalPaid > 0) {
+                    detailMessage += `\n📊 Sudah dibayar: Rp ${totalPaid.toLocaleString('id-ID')}`;
                 }
+                detailMessage += `\n💵 Cicilan ini: Rp ${paymentAmount.toLocaleString('id-ID')}`;
+                detailMessage += `\n✅ Total Terbayar: Rp ${newTotalPaid.toLocaleString('id-ID')}`;
+                detailMessage += `\n⚠️ Sisa tagihan: Rp ${newRemaining.toLocaleString('id-ID')}`;
             }
             
             // Action message based on method (history rules)
@@ -3211,6 +3454,22 @@
             console.log('Payment method selected:', method);
         }
 
+        // Select Payment Type (Lunas/Cicilan)
+        function selectPaymentType(element, type) {
+            // Remove previous selection
+            document.querySelectorAll('.payment-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Select current type
+            element.classList.add('active');
+            
+            // Set hidden input value
+            document.getElementById('selectedPaymentType').value = type;
+            
+            console.log('Payment type selected:', type);
+        }
+
         // Hide Payment Form
         function hidePaymentForm() {
             document.getElementById('paymentForm').style.display = 'none';
@@ -3330,9 +3589,23 @@
                 if (isFullyPaid) {
                     updateInvoiceStatus(currentInvoiceNo, 'lunas');
                     hideInvoiceFromList(currentInvoiceNo);
+                } else {
+                    // ✅ UPDATE AMOUNT DISPLAY for partial payment
+                    updateInvoiceAmountDisplay(currentInvoiceNo, currentInvoiceAmount);
                 }
                 
                 hidePaymentForm();
+                
+                // ✅ REFRESH DASHBOARD - Important!
+                setTimeout(() => {
+                    // Refresh untuk update semua counter dan display
+                    const currentView = document.querySelector('.section-title')?.textContent;
+                    if (currentView && currentView.includes('Dashboard Tagihan')) {
+                        console.log('Refreshing dashboard after payment...');
+                        updateGlobalTagihanCounter();
+                        updateTokoDropdown();
+                    }
+                }, 500);
             }, 2000);
         }
 
@@ -3443,48 +3716,43 @@
             const remainingAmount = getInvoiceRemainingAmount(invoiceNo, originalAmount);
             const totalPaid = getTotalPaidForInvoice(invoiceNo);
             
-            console.log(`Updating invoice ${invoiceNo}: Original Rp ${originalAmount.toLocaleString('id-ID')}, Paid Rp ${totalPaid.toLocaleString('id-ID')}, Remaining Rp ${remainingAmount.toLocaleString('id-ID')}`);
+            console.log(`Updating invoice ${invoiceNo}: Remaining Rp ${remainingAmount.toLocaleString('id-ID')}`);
             
             invoiceItems.forEach(item => {
-                // Store original amount if not already stored
-                if (!item.getAttribute('data-original-amount')) {
-                    item.setAttribute('data-original-amount', originalAmount);
-                    console.log(`Stored original amount for ${invoiceNo}: ${originalAmount}`);
-                }
-                
-                // Update the amount display
+                // Update amount display
                 const amountEl = item.querySelector('.invoice-amount');
                 if (amountEl) {
-                    if (totalPaid > 0 && remainingAmount > 0 && remainingAmount < originalAmount) {
-                        // Show remaining amount with strikethrough original
-                        amountEl.innerHTML = `💰 <span style="text-decoration: line-through; color: #999;">Rp ${originalAmount.toLocaleString('id-ID')}</span><br><span style="color: #f39c12; font-weight: bold;">Sisa: Rp ${remainingAmount.toLocaleString('id-ID')}</span>`;
-                        console.log(`Updated display for ${invoiceNo} with remaining amount`);
-                    } else {
-                        amountEl.innerHTML = `💰 Rp ${originalAmount.toLocaleString('id-ID')}`;
-                    }
+                    amountEl.textContent = `💰 Rp ${remainingAmount.toLocaleString('id-ID')}`;
                 }
                 
-                // Update data-amount attribute for calculations (but keep original separate)
-                item.dataset.amount = remainingAmount;
-                
-                // Add visual indicator for partial payment
-                if (totalPaid > 0 && remainingAmount > 0) {
-                    item.style.borderLeft = '4px solid #f39c12';
-                    const statusEl = item.querySelector('.tagihan-status');
-                    if (statusEl && !statusEl.textContent.includes('Cicilan')) {
-                        statusEl.innerHTML = '💰 Cicilan';
-                        statusEl.className = 'tagihan-status';
-                        statusEl.style.background = '#f39c12';
-                        statusEl.style.color = 'white';
+                // ✅ ADD/UPDATE PAID INFO
+                let paidInfoEl = item.querySelector('.payment-progress');
+                if (totalPaid > 0) {
+                    if (!paidInfoEl) {
+                        paidInfoEl = document.createElement('div');
+                        paidInfoEl.className = 'payment-progress';
+                        paidInfoEl.style.cssText = 'margin-top: 5px; font-size: 11px;';
+                        item.querySelector('.invoice-details').after(paidInfoEl);
                     }
+                    paidInfoEl.innerHTML = `
+                        <span style="color: #28a745;">💳 Sudah Dibayar: Rp ${totalPaid.toLocaleString('id-ID')}</span>
+                        <span style="color: #dc3545; margin-left: 10px;">⚠️ Sisa Tagihan: Rp ${remainingAmount.toLocaleString('id-ID')}</span>
+                    `;
+                }
+                
+                // Update data attributes
+                item.setAttribute('data-amount', remainingAmount);
+                if (!item.getAttribute('data-original-amount')) {
+                    item.setAttribute('data-original-amount', originalAmount);
+                }
+                
+                // ✅ UPDATE TOKO GROUP HEADER
+                const tokoGroup = item.closest('.toko-group');
+                const tokoName = item.dataset.toko;
+                if (tokoGroup && tokoName) {
+                    updateTokoGroupHeader(tokoName, tokoGroup);
                 }
             });
-            
-            // Update toko group totals
-            const tokoGroup = document.querySelector(`[data-invoice="${invoiceNo}"]`)?.closest('.toko-group');
-            if (tokoGroup) {
-                updateTokoGroupTotals(tokoGroup);
-            }
         }
         
         // Update toko group totals after payment
@@ -3520,6 +3788,7 @@
             invoiceItems.forEach(item => {
                 // Get the parent toko group before removing
                 const tokoGroup = item.closest('.toko-group');
+                const tokoName = item.dataset.toko;
                 const invoiceAmount = parseInt(item.dataset.amount) || 0;
                 
                 // Hide the invoice with smooth fade out
@@ -3537,43 +3806,74 @@
                     
                     console.log('Invoice removed:', invoiceNo);
                     
-                    // Update toko group header
-                    if (tokoGroup) {
-                        const remainingInvoices = tokoGroup.querySelectorAll('.tagihan-item');
-                        const invoiceCountEl = tokoGroup.querySelector('.invoice-count');
-                        const totalAmountEl = tokoGroup.querySelector('.total-amount');
+                    // ✅ UPDATE TOKO GROUP HEADER menggunakan data store
+                    if (tokoGroup && tokoName) {
+                        updateTokoGroupHeader(tokoName, tokoGroup);
                         
-                        if (remainingInvoices.length === 0) {
-                            // Jika tidak ada invoice tersisa, sembunyikan toko
-                            tokoGroup.style.display = 'none';
-                            console.log('Toko group hidden - no more invoices');
-                        } else {
-                            // Update jumlah nota
-                            const count = remainingInvoices.length;
-                            if (invoiceCountEl) {
-                                invoiceCountEl.textContent = `${count} faktur`;
-                            }
-                            
-                            // Update total nominal
-                            let totalAmount = 0;
-                            remainingInvoices.forEach(inv => {
-                                const amount = parseInt(inv.dataset.amount) || 0;
-                                totalAmount += amount;
-                            });
-                            
-                            if (totalAmountEl) {
-                                totalAmountEl.textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
-                            }
-                            
-                            console.log(`Updated toko header: ${count} invoices, total: Rp ${totalAmount.toLocaleString('id-ID')}`);
+                        // Check if toko has no more invoices
+                        const activeInvoices = getActiveInvoicesForToko(tokoName);
+                        if (activeInvoices.length === 0) {
+                            // Hide entire toko group
+                            tokoGroup.style.opacity = '0';
+                            setTimeout(() => tokoGroup.remove(), 500);
+                            console.log('Toko group removed - no more invoices');
                         }
                     }
                     
-                    // Update counter
-                    updateTagihanCounter();
-                    updateTokoSelectorCounts(); // Update dropdown counts
+                    // ✅ UPDATE GLOBAL COUNTER
+                    updateGlobalTagihanCounter();
+                    
+                    // ✅ UPDATE DROPDOWN
+                    updateTokoDropdown();
                 }, 600);
             });
+        }
+
+        // ✅ NEW FUNCTION: Update toko group header
+        function updateTokoGroupHeader(tokoName, tokoGroup) {
+            const activeInvoices = getActiveInvoicesForToko(tokoName);
+            const tokoTotal = getTokoTotalRemaining(tokoName);
+            
+            const invoiceCountEl = tokoGroup.querySelector('.invoice-count');
+            const totalAmountEl = tokoGroup.querySelector('.total-amount');
+            
+            if (invoiceCountEl) {
+                invoiceCountEl.textContent = `${activeInvoices.length} faktur`;
+            }
+            
+            if (totalAmountEl) {
+                totalAmountEl.textContent = `Rp ${tokoTotal.toLocaleString('id-ID')}`;
+            }
+        }
+
+        // ✅ NEW FUNCTION: Update global counter
+        function updateGlobalTagihanCounter() {
+            let totalInvoices = 0;
+            let totalTokos = 0;
+            
+            invoiceDataStore.tokos.forEach(toko => {
+                const activeInvoices = getActiveInvoicesForToko(toko.name);
+                if (activeInvoices.length > 0) {
+                    totalTokos++;
+                    totalInvoices += activeInvoices.length;
+                }
+            });
+            
+            const countEl = document.getElementById('tagihanCount');
+            const tokoCountEl = document.getElementById('tokoCount');
+            
+            if (countEl) countEl.textContent = totalInvoices;
+            if (tokoCountEl) tokoCountEl.textContent = totalTokos;
+        }
+
+        // ✅ NEW FUNCTION: Update dropdown
+        function updateTokoDropdown() {
+            const dropdown = document.getElementById('tokoSelect');
+            if (!dropdown) return;
+            
+            const currentValue = dropdown.value;
+            dropdown.innerHTML = '<option value="">-- Pilih Toko --</option>' + buildTokoDropdownOptions();
+            dropdown.value = currentValue;
         }
 
         // Show Orderan (Kunjungan)
