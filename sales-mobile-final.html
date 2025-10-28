@@ -3199,7 +3199,7 @@
                     </div>
                     
                     <div class="button-group">
-                        <button id="btnProcessPayment" class="btn btn-success">💳 Proses Pembayaran</button>
+                        <button id="btnProcessPayment" onclick="window.doProcessPayment()" class="btn btn-success">💳 Proses Pembayaran</button>
                         <button onclick="showTagihan()" class="btn btn-secondary">❌ Batal</button>
                     </div>
                 </div>
@@ -3207,50 +3207,30 @@
             
             showContent(content);
             
-            // Set default payment method to Cash and attach event listener after content is rendered
+            // Set default payment method to Cash and setup payment button
             setTimeout(() => {
                 const cashBtn = document.querySelector('.payment-method[onclick*="cash"]');
                 if (cashBtn) {
                     selectPaymentMethod(cashBtn, 'cash');
-                    console.log('✅ Default payment method set to Cash');
                 }
                 
-                // Attach event listener to payment button
-                const paymentBtn = document.getElementById('btnProcessPayment');
-                if (paymentBtn) {
-                    paymentBtn.addEventListener('click', function() {
-                        console.log('🎯 Button clicked via addEventListener!');
-                        processPayment();
-                    });
-                    console.log('✅ Event listener attached to payment button');
-                } else {
-                    console.error('❌ Payment button not found!');
-                }
+                // Make processPayment globally accessible
+                window.doProcessPayment = function() {
+                    processPayment();
+                };
             }, 100);
         }
         
         // Process single payment
         function processPayment() {
-            console.log('🔔 processPayment() called!');
-            console.log('📋 selectedInvoice:', selectedInvoice);
-            
             const paymentAmountEl = document.getElementById('paymentAmount');
             const paymentTypeEl = document.getElementById('selectedPaymentType');
             const paymentMethodEl = document.getElementById('selectedPaymentMethod');
             const paymentNotesEl = document.getElementById('paymentNotes');
             const paymentProofEl = document.getElementById('paymentProof');
             
-            console.log('🔍 Elements found:', {
-                paymentAmountEl: !!paymentAmountEl,
-                paymentTypeEl: !!paymentTypeEl,
-                paymentMethodEl: !!paymentMethodEl,
-                paymentNotesEl: !!paymentNotesEl,
-                paymentProofEl: !!paymentProofEl
-            });
-            
             if (!paymentAmountEl || !paymentTypeEl || !paymentMethodEl) {
                 alert('❌ ERROR: Form elements tidak ditemukan! Mohon refresh halaman.');
-                console.error('Missing form elements!');
                 return;
             }
             
@@ -3259,8 +3239,6 @@
             const paymentMethod = paymentMethodEl.value;
             const paymentNotes = paymentNotesEl ? paymentNotesEl.value : '';
             const paymentProof = paymentProofEl;
-            
-            console.log('💰 Processing payment:', {paymentAmount, paymentType, paymentMethod});
             
             // Validation
             if (!paymentAmount || paymentAmount <= 0) {
