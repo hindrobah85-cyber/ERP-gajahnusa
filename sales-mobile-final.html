@@ -1579,6 +1579,78 @@
             showDashboard();
         }
 
+        // ✅ NEW FUNCTION: Generate invoice HTML from data store
+        function generateInvoiceHTML() {
+            let html = '';
+            
+            invoiceDataStore.tokos.forEach(toko => {
+                const activeInvoices = getActiveInvoicesForToko(toko.name);
+                
+                // Skip toko with no active invoices
+                if (activeInvoices.length === 0) return;
+                
+                const tokoTotal = getTokoTotalRemaining(toko.name);
+                
+                html += `
+                    <div class="toko-group" data-toko="${toko.name}">
+                        <div class="toko-header" onclick="toggleTokoGroup(this)">
+                            <h4>🏪 ${toko.name}</h4>
+                            <div class="toko-summary">
+                                <span class="invoice-count">${activeInvoices.length} faktur</span>
+                                <span class="total-amount">Rp ${tokoTotal.toLocaleString('id-ID')}</span>
+                                <span class="expand-icon">▼</span>
+                            </div>
+                        </div>
+                        <div class="toko-invoices">
+                `;
+                
+                activeInvoices.forEach(invoice => {
+                    const remaining = getInvoiceRemainingAmount(invoice.number, invoice.originalAmount);
+                    const totalPaid = getTotalPaidForInvoice(invoice.number);
+                    const daysOverdue = Math.floor((new Date() - new Date(invoice.date)) / (1000 * 60 * 60 * 24));
+                    
+                    html += `
+                        <div class="tagihan-item" onclick="selectTagihan(this, '${invoice.number}', ${invoice.originalAmount}, '${toko.name}')" 
+                             data-invoice="${invoice.number}" 
+                             data-amount="${remaining}" 
+                             data-original-amount="${invoice.originalAmount}"
+                             data-toko="${toko.name}" 
+                             data-date="${invoice.date}">
+                            <input type="checkbox" class="invoice-checkbox" onclick="toggleInvoiceSelection(event, this)" style="display: none;">
+                            <div class="invoice-info">
+                                <div class="invoice-main">
+                                    <span class="invoice-number">📄 ${invoice.number}</span>
+                                    <span class="tagihan-status status-${invoice.status}">${invoice.status === 'wajib-tagih' ? '🚨 Wajib Tagih' : invoice.status === 'terlambat' ? '⚠️ Terlambat' : '✅ Lancar'}</span>
+                                </div>
+                                <div class="invoice-details">
+                                    <span>📅 ${invoice.date} (${daysOverdue} hari)</span>
+                                    <span class="invoice-amount">💰 Rp ${remaining.toLocaleString('id-ID')}</span>
+                                </div>
+                                ${totalPaid > 0 ? `
+                                <div class="payment-progress" style="margin-top: 5px; font-size: 11px;">
+                                    <span style="color: #28a745;">💳 Sudah Dibayar: Rp ${totalPaid.toLocaleString('id-ID')}</span>
+                                    <span style="color: #dc3545; margin-left: 10px;">⚠️ Sisa Tagihan: Rp ${remaining.toLocaleString('id-ID')}</span>
+                                </div>
+                                ` : ''}
+                                <div class="payment-terms">
+                                    <span class="payment-method-info">💳 Ketentuan: ${invoice.paymentTerms}</span>
+                                    <span class="payment-due">⏰ Jatuh tempo: ${invoice.dueDate} hari</span>
+                                    <div class="payment-detail" style="font-size: 10px; color: #777; margin-top: 2px;">📝 ${invoice.bankInfo}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            return html;
+        }
+
         // Show Tagihan
         function showTagihan() {
             if (!callPlanCreated) {
@@ -2333,6 +2405,17 @@
             `;
             
             showContent(content);
+            
+            // ✅ REPLACE HARDCODED HTML WITH DYNAMIC DATA FROM invoiceDataStore
+            setTimeout(() => {
+                const tagihanListEl = document.getElementById('tagihanList');
+                if (tagihanListEl) {
+                    const dynamicHTML = generateInvoiceHTML();
+                    tagihanListEl.innerHTML = dynamicHTML;
+                    console.log('✅ Invoice HTML regenerated from data store');
+                }
+            }, 50);
+            
             loadTagihanData();
             
             // Update toko selector counts after DOM is ready
