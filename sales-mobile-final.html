@@ -1536,6 +1536,27 @@
                 return remaining > 0; // Only show unpaid invoices
             });
         }
+        
+        // ✅ NEW: Calculate invoice status based on age (days overdue)
+        function calculateInvoiceStatus(invoiceDate) {
+            const today = new Date();
+            const invDate = new Date(invoiceDate);
+            const daysOld = Math.floor((today - invDate) / (1000 * 60 * 60 * 24));
+            
+            // Status berdasarkan umur faktur:
+            // 1. SEMUA: 0 - tidak terhingga
+            // 2. LANCAR: 0 - 59 hari
+            // 3. TERLAMBAT: 60 - 69 hari
+            // 4. WAJIB TAGIH: 70 - tidak terhingga
+            
+            if (daysOld >= 70) {
+                return 'wajib-tagih';
+            } else if (daysOld >= 60) {
+                return 'terlambat';
+            } else {
+                return 'lancar';
+            }
+        }
 
         // Get total remaining amount for a toko
         function getTokoTotalRemaining(tokoName) {
@@ -1609,18 +1630,26 @@
                     const totalPaid = getTotalPaidForInvoice(invoice.number);
                     const daysOverdue = Math.floor((new Date() - new Date(invoice.date)) / (1000 * 60 * 60 * 24));
                     
+                    // ✅ Calculate status dynamically based on invoice age
+                    const dynamicStatus = calculateInvoiceStatus(invoice.date);
+                    const statusLabel = dynamicStatus === 'wajib-tagih' ? '🚨 Wajib Tagih' : 
+                                      dynamicStatus === 'terlambat' ? '⚠️ Terlambat' : 
+                                      '✅ Lancar';
+                    
                     html += `
                         <div class="tagihan-item" onclick="selectTagihan(this, '${invoice.number}', ${invoice.originalAmount}, '${toko.name}')" 
                              data-invoice="${invoice.number}" 
                              data-amount="${remaining}" 
                              data-original-amount="${invoice.originalAmount}"
                              data-toko="${toko.name}" 
-                             data-date="${invoice.date}">
+                             data-date="${invoice.date}"
+                             data-days="${daysOverdue}"
+                             data-status="${dynamicStatus}">
                             <input type="checkbox" class="invoice-checkbox" onclick="toggleInvoiceSelection(event, this)" style="display: none;">
                             <div class="invoice-info">
                                 <div class="invoice-main">
                                     <span class="invoice-number">📄 ${invoice.number}</span>
-                                    <span class="tagihan-status status-${invoice.status}">${invoice.status === 'wajib-tagih' ? '🚨 Wajib Tagih' : invoice.status === 'terlambat' ? '⚠️ Terlambat' : '✅ Lancar'}</span>
+                                    <span class="tagihan-status status-${dynamicStatus}">${statusLabel}</span>
                                 </div>
                                 <div class="invoice-details">
                                     <span>📅 ${invoice.date} (${daysOverdue} hari)</span>
@@ -2592,16 +2621,8 @@
                 let hasVisibleInvoice = false;
                 
                 invoices.forEach(invoice => {
-                    const statusElement = invoice.querySelector('.tagihan-status');
-                    const statusText = statusElement.textContent;
-                    
-                    let invoiceStatus = 'lancar';
-                    if (statusText.includes('Wajib Tagih')) {
-                        invoiceStatus = 'wajib-tagih';
-                    } else if (statusText.includes('Terlambat')) {
-                        invoiceStatus = 'terlambat';
-                    }
-                    
+                    // ✅ Use data-status attribute for filtering (calculated dynamically)
+                    const invoiceStatus = invoice.getAttribute('data-status');
                     const isVisible = status === 'semua' || invoiceStatus === status;
                     
                     invoice.style.display = isVisible ? 'block' : 'none';
