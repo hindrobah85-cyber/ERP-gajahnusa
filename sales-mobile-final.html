@@ -3207,8 +3207,14 @@
             
             showContent(content);
             
-            // Set default payment type to lunas
-            setPaymentType('lunas');
+            // Set default payment method to Cash after content is rendered
+            setTimeout(() => {
+                const cashBtn = document.querySelector('.payment-method[onclick*="cash"]');
+                if (cashBtn) {
+                    selectPaymentMethod(cashBtn, 'cash');
+                    console.log('✅ Default payment method set to Cash');
+                }
+            }, 100);
         }
         
         // Process single payment
