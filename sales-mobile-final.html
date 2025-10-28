@@ -2773,7 +2773,7 @@
                 console.log(`✅ Invoice ${invoiceNo} LUNAS. Overpayment: Rp ${overpayment.toLocaleString('id-ID')}`);
                 
                 // Mark as paid
-                markInvoiceAsPaid(invoiceNo);
+                addPaidInvoice(invoiceNo);
                 
                 // ✅ UPDATE DATA STORE
                 updateInvoiceDataStore(invoiceNo, currentRemaining, tokoName);
@@ -2808,7 +2808,7 @@
                 
                 // Check if now fully paid
                 if (payments[invoiceNo].totalPaid >= originalAmount) {
-                    markInvoiceAsPaid(invoiceNo);
+                    addPaidInvoice(invoiceNo);
                 }
             }
             
