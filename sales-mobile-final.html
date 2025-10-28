@@ -3199,7 +3199,7 @@
                     </div>
                     
                     <div class="button-group">
-                        <button onclick="processPayment()" class="btn btn-success">💳 Proses Pembayaran</button>
+                        <button id="btnProcessPayment" class="btn btn-success">💳 Proses Pembayaran</button>
                         <button onclick="showTagihan()" class="btn btn-secondary">❌ Batal</button>
                     </div>
                 </div>
@@ -3207,12 +3207,24 @@
             
             showContent(content);
             
-            // Set default payment method to Cash after content is rendered
+            // Set default payment method to Cash and attach event listener after content is rendered
             setTimeout(() => {
                 const cashBtn = document.querySelector('.payment-method[onclick*="cash"]');
                 if (cashBtn) {
                     selectPaymentMethod(cashBtn, 'cash');
                     console.log('✅ Default payment method set to Cash');
+                }
+                
+                // Attach event listener to payment button
+                const paymentBtn = document.getElementById('btnProcessPayment');
+                if (paymentBtn) {
+                    paymentBtn.addEventListener('click', function() {
+                        console.log('🎯 Button clicked via addEventListener!');
+                        processPayment();
+                    });
+                    console.log('✅ Event listener attached to payment button');
+                } else {
+                    console.error('❌ Payment button not found!');
                 }
             }, 100);
         }
