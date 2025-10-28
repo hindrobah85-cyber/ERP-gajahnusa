@@ -2692,6 +2692,9 @@
                 // Mark as paid
                 markInvoiceAsPaid(invoiceNo);
                 
+                // ✅ UPDATE DATA STORE
+                updateInvoiceDataStore(invoiceNo, currentRemaining, tokoName);
+                
                 // Cari nota berikutnya dari toko yang sama
                 if (overpayment > 0 && tokoName) {
                     const nextInvoice = findNextUnpaidInvoice(tokoName, invoiceNo);
@@ -2701,7 +2704,11 @@
                         return addInvoicePayment(nextInvoice.invoiceNo, overpayment, nextInvoice.amount, tokoName);
                     } else {
                         console.log(`⚠️ Tidak ada nota berikutnya. Overpayment: Rp ${overpayment.toLocaleString('id-ID')}`);
-                        return { overpayment: overpayment, lastInvoice: invoiceNo };
+                        return { 
+                            ...payments[invoiceNo],
+                            overpayment: overpayment, 
+                            lastInvoice: invoiceNo 
+                        };
                     }
                 }
             } else {
@@ -2713,6 +2720,9 @@
                     timestamp: new Date().toLocaleString('id-ID')
                 });
                 
+                // ✅ UPDATE DATA STORE
+                updateInvoiceDataStore(invoiceNo, amount, tokoName);
+                
                 // Check if now fully paid
                 if (payments[invoiceNo].totalPaid >= originalAmount) {
                     markInvoiceAsPaid(invoiceNo);
@@ -2722,6 +2732,30 @@
             localStorage.setItem('invoicePayments', JSON.stringify(payments));
             console.log(`Payment recorded for ${invoiceNo}: Rp ${amount.toLocaleString('id-ID')}`);
             return payments[invoiceNo];
+        }
+        
+        // ✅ NEW FUNCTION: Update invoice data store
+        function updateInvoiceDataStore(invoiceNo, paymentAmount, tokoName) {
+            console.log('Updating data store:', invoiceNo, paymentAmount, tokoName);
+            
+            // Find toko in data store
+            const toko = invoiceDataStore.tokos.find(t => t.name === tokoName);
+            if (!toko) {
+                console.warn('Toko not found in data store:', tokoName);
+                return;
+            }
+            
+            // Find invoice in toko
+            const invoice = toko.invoices.find(inv => inv.number === invoiceNo);
+            if (!invoice) {
+                console.warn('Invoice not found in data store:', invoiceNo);
+                return;
+            }
+            
+            // Update paid amount
+            invoice.paid = (invoice.paid || 0) + paymentAmount;
+            
+            console.log(`✅ Data store updated: ${invoiceNo} - Paid: Rp ${invoice.paid.toLocaleString('id-ID')} / Total: Rp ${invoice.originalAmount.toLocaleString('id-ID')}`);
         }
         
         // Helper function to find next unpaid invoice from same toko
@@ -3258,10 +3292,28 @@
                         hideInvoiceFromList(invoiceToHide);
                     }, 600);
                 } else {
-                    // If partially paid, update the invoice amount display
+                    // If partially paid, update the invoice amount display AND all counters
                     setTimeout(() => {
                         updateInvoiceAmountDisplay(selectedInvoice.number, selectedInvoice.amount);
                         console.log('Invoice amount display updated after payment');
+                        
+                        // ✅ UPDATE TOKO GROUP HEADER
+                        const invoiceElement = document.querySelector(`[data-invoice="${selectedInvoice.number}"]`);
+                        if (invoiceElement) {
+                            const tokoGroup = invoiceElement.closest('.toko-group');
+                            if (tokoGroup) {
+                                updateTokoGroupHeader(selectedInvoice.toko, tokoGroup);
+                                console.log('Toko group header updated after cicilan');
+                            }
+                        }
+                        
+                        // ✅ UPDATE GLOBAL COUNTER
+                        updateGlobalTagihanCounter();
+                        console.log('Global counter updated after cicilan');
+                        
+                        // ✅ UPDATE DROPDOWN
+                        updateTokoDropdown();
+                        console.log('Dropdown updated after cicilan');
                     }, 600);
                 }
             }, 500);
