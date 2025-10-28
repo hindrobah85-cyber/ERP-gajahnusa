@@ -3199,26 +3199,32 @@
                     </div>
                     
                     <div class="button-group">
-                        <button id="btnProcessPayment" onclick="window.doProcessPayment()" class="btn btn-success">💳 Proses Pembayaran</button>
-                        <button onclick="showTagihan()" class="btn btn-secondary">❌ Batal</button>
+                        <button type="button" id="btnProcessPayment" class="btn btn-success" style="font-size: 16px; padding: 15px;">💳 Proses Pembayaran</button>
+                        <button type="button" onclick="showTagihan()" class="btn btn-secondary">❌ Batal</button>
                     </div>
                 </div>
             `;
             
             showContent(content);
             
-            // Set default payment method to Cash and setup payment button
+            // Set default payment method to Cash and setup payment button after content rendered
             setTimeout(() => {
                 const cashBtn = document.querySelector('.payment-method[onclick*="cash"]');
                 if (cashBtn) {
                     selectPaymentMethod(cashBtn, 'cash');
                 }
                 
-                // Make processPayment globally accessible
-                window.doProcessPayment = function() {
-                    processPayment();
-                };
-            }, 100);
+                // Attach onclick directly to button element
+                const paymentBtn = document.getElementById('btnProcessPayment');
+                if (paymentBtn) {
+                    paymentBtn.onclick = function() {
+                        alert('🔔 Tombol diklik! Memanggil processPayment...');
+                        processPayment();
+                    };
+                } else {
+                    alert('ERROR: Button not found!');
+                }
+            }, 150);
         }
         
         // Process single payment
