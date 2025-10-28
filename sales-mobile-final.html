@@ -3231,68 +3231,62 @@
         
         // Process single payment
         function processPayment() {
-            try {
-                console.log('🔔 processPayment START');
-                
-                const paymentAmountEl = document.getElementById('paymentAmount');
-                const paymentTypeEl = document.getElementById('selectedPaymentType');
-                const paymentMethodEl = document.getElementById('selectedPaymentMethod');
-                const paymentNotesEl = document.getElementById('paymentNotes');
-                const paymentProofEl = document.getElementById('paymentProof');
-                
-                console.log('Elements:', {paymentAmountEl, paymentTypeEl, paymentMethodEl});
-                
-                if (!paymentAmountEl || !paymentTypeEl || !paymentMethodEl) {
-                    alert('❌ ERROR: Form elements tidak ditemukan! Mohon refresh halaman.');
-                    return;
-                }
-                
-                const paymentAmount = parseFloat(paymentAmountEl.value);
-                const paymentType = paymentTypeEl.value; 
-                const paymentMethod = paymentMethodEl.value;
-                const paymentNotes = paymentNotesEl ? paymentNotesEl.value : '';
-                const paymentProof = paymentProofEl;
-                
-                console.log('Values:', {paymentAmount, paymentType, paymentMethod});
-                
-                // Validation
-                if (!paymentAmount || paymentAmount <= 0) {
-                    alert('❌ Masukkan jumlah pembayaran yang valid!');
-                    return;
-                }
-                
-                console.log('Validation passed, checking selectedInvoice:', selectedInvoice);
-                
-                // Check previous payments and remaining amount
-                const totalPaid = getTotalPaidForInvoice(selectedInvoice.number);
-                const originalAmount = selectedInvoice.amount;
-                const remainingAmount = originalAmount - totalPaid;
-                
-                console.log('Payment info:', {totalPaid, originalAmount, remainingAmount});
-                
-                // OVERPAYMENT DIPERBOLEHKAN - Validasi dihapus, sistem akan handle otomatis
-                
-                if (!paymentMethod) {
-                    alert('❌ Pilih metode pembayaran!');
-                    return;
-                }
-                
-                console.log('Method validation passed');
-                
-                // History rules: Transfer/Cek/Giro WAJIB upload bukti
-                const needsProof = (paymentMethod === 'transfer' || paymentMethod === 'cek' || paymentMethod === 'giro');
-                
-                if (needsProof && (!paymentProof.files || paymentProof.files.length === 0)) {
-                    alert('❌ Upload bukti pembayaran untuk metode ini!');
-                    return;
-                }
-                
-                console.log('Proof validation passed, processing payment...');
-            } catch (error) {
-                alert('❌ ERROR di processPayment: ' + error.message);
-                console.error('Error:', error);
+            console.log('🔔 processPayment START');
+            
+            const paymentAmountEl = document.getElementById('paymentAmount');
+            const paymentTypeEl = document.getElementById('selectedPaymentType');
+            const paymentMethodEl = document.getElementById('selectedPaymentMethod');
+            const paymentNotesEl = document.getElementById('paymentNotes');
+            const paymentProofEl = document.getElementById('paymentProof');
+            
+            console.log('Elements:', {paymentAmountEl, paymentTypeEl, paymentMethodEl});
+            
+            if (!paymentAmountEl || !paymentTypeEl || !paymentMethodEl) {
+                alert('❌ ERROR: Form elements tidak ditemukan! Mohon refresh halaman.');
                 return;
             }
+            
+            const paymentAmount = parseFloat(paymentAmountEl.value);
+            const paymentType = paymentTypeEl.value; 
+            const paymentMethod = paymentMethodEl.value;
+            const paymentNotes = paymentNotesEl ? paymentNotesEl.value : '';
+            const paymentProof = paymentProofEl;
+            
+            console.log('Values:', {paymentAmount, paymentType, paymentMethod});
+            
+            // Validation
+            if (!paymentAmount || paymentAmount <= 0) {
+                alert('❌ Masukkan jumlah pembayaran yang valid!');
+                return;
+            }
+            
+            console.log('Validation passed, checking selectedInvoice:', selectedInvoice);
+            
+            // Check previous payments and remaining amount
+            const totalPaid = getTotalPaidForInvoice(selectedInvoice.number);
+            const originalAmount = selectedInvoice.amount;
+            const remainingAmount = originalAmount - totalPaid;
+            
+            console.log('Payment info:', {totalPaid, originalAmount, remainingAmount});
+            
+            // OVERPAYMENT DIPERBOLEHKAN - Validasi dihapus, sistem akan handle otomatis
+            
+            if (!paymentMethod) {
+                alert('❌ Pilih metode pembayaran!');
+                return;
+            }
+            
+            console.log('Method validation passed');
+            
+            // History rules: Transfer/Cek/Giro WAJIB upload bukti
+            const needsProof = (paymentMethod === 'transfer' || paymentMethod === 'cek' || paymentMethod === 'giro');
+            
+            if (needsProof && (!paymentProof.files || paymentProof.files.length === 0)) {
+                alert('❌ Upload bukti pembayaran untuk metode ini!');
+                return;
+            }
+            
+            console.log('Proof validation passed, building payment data...');
             
             // Get method display name
             const methodNames = {
@@ -3398,6 +3392,9 @@
                 ${paymentData.proof ? `📷 Bukti: ${paymentData.proof}` : ''}
                 ⏰ Waktu: ${paymentData.timestamp}
             `;
+            
+            console.log('✅ Payment processed successfully!');
+            console.log('Success message:', successMessage);
             
             alert(successMessage);
             
