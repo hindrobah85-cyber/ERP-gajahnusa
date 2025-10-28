@@ -3219,13 +3219,36 @@
         
         // Process single payment
         function processPayment() {
-            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-            const paymentType = document.getElementById('selectedPaymentType').value; // ✅ FIXED: Get payment type
-            const paymentMethod = document.getElementById('selectedPaymentMethod').value;
-            const paymentNotes = document.getElementById('paymentNotes').value;
-            const paymentProof = document.getElementById('paymentProof');
+            console.log('🔔 processPayment() called!');
+            console.log('📋 selectedInvoice:', selectedInvoice);
             
-            console.log('Processing payment:', {paymentAmount, paymentType, paymentMethod});
+            const paymentAmountEl = document.getElementById('paymentAmount');
+            const paymentTypeEl = document.getElementById('selectedPaymentType');
+            const paymentMethodEl = document.getElementById('selectedPaymentMethod');
+            const paymentNotesEl = document.getElementById('paymentNotes');
+            const paymentProofEl = document.getElementById('paymentProof');
+            
+            console.log('🔍 Elements found:', {
+                paymentAmountEl: !!paymentAmountEl,
+                paymentTypeEl: !!paymentTypeEl,
+                paymentMethodEl: !!paymentMethodEl,
+                paymentNotesEl: !!paymentNotesEl,
+                paymentProofEl: !!paymentProofEl
+            });
+            
+            if (!paymentAmountEl || !paymentTypeEl || !paymentMethodEl) {
+                alert('❌ ERROR: Form elements tidak ditemukan! Mohon refresh halaman.');
+                console.error('Missing form elements!');
+                return;
+            }
+            
+            const paymentAmount = parseFloat(paymentAmountEl.value);
+            const paymentType = paymentTypeEl.value; 
+            const paymentMethod = paymentMethodEl.value;
+            const paymentNotes = paymentNotesEl ? paymentNotesEl.value : '';
+            const paymentProof = paymentProofEl;
+            
+            console.log('💰 Processing payment:', {paymentAmount, paymentType, paymentMethod});
             
             // Validation
             if (!paymentAmount || paymentAmount <= 0) {
